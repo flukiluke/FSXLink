@@ -1,5 +1,6 @@
 package com.flukiluke.fsxlink;
 
+import flightsim.simconnect.config.Configuration;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,6 +32,17 @@ public class Config {
         }
     }
 
+    public static Configuration getSimConnectConfig() {
+        Configuration scConfig = new Configuration();
+        JSONObject jsonSc = (JSONObject)config.get("simconnect");
+        scConfig.put("appName", (String)jsonSc.get("app_name"));
+        scConfig.setAddress((String)jsonSc.get("ip"));
+        scConfig.setPort((Integer)jsonSc.get("port"));
+        scConfig.setProtocol((Integer)jsonSc.get("ip_version"));
+        scConfig.put("simConnectProtocol", (String)jsonSc.get("protocol"));
+        return scConfig;
+    }
+
     public static List<Mapping> getInputMappings() {
         return getMapping("input_map");
     }
@@ -47,7 +59,7 @@ public class Config {
             mappings.add(new Mapping(
                     (String)jsonMapping.get("name"),
                     (String)jsonMapping.get("command"),
-                    (Integer)jsonMapping.get("arg_length")
+                    (Long)jsonMapping.get("arg_length")
                     ));
         }
         return mappings;

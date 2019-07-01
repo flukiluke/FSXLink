@@ -1,6 +1,8 @@
 {
   "simconnect": {
+    "app_name": "FSXLink",
     "ip": "127.0.0.1",
+    "ip_version": 4,
     "port": 5017,
     "protocol": 2
   },
@@ -8,7 +10,7 @@
   "input_map": [
     {"name": "AP_ALT_VAR_SET_ENGLISH", "command": "a", "arg_length": 5},
     {"name": "HEADING_BUG_SET", "command": "b", "arg_length": 3},
-    {"name": "AP_ALT_HOLD", "command": "a", "arg_length":  0}
+    {"name": "AP_ALT_HOLD", "command": "c", "arg_length":  0}
   ],
 
   "output_map": [
