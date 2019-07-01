@@ -58,6 +58,7 @@ public class Config {
             JSONObject jsonMapping = (JSONObject)o;
             mappings.add(new Mapping(
                     (String)jsonMapping.get("name"),
+                    (String)jsonMapping.get("unit"),
                     (String)jsonMapping.get("command"),
                     (Long)jsonMapping.get("arg_length")
                     ));

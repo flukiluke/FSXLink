@@ -14,7 +14,7 @@
   ],
 
   "output_map": [
-    {"name": "AUTOPILOT ALTITUDE LOCK VAR", "command": "a", "arg_length": 5},
-    {"name": "AUTOPILOT HEADING LOCK DIR", "command": "b", "arg_length": 3}
+    {"name": "AUTOPILOT ALTITUDE LOCK VAR", "unit": "feet", "command": "a", "arg_length": 5},
+    {"name": "AUTOPILOT HEADING LOCK DIR", "unit": "degrees", "command": "b", "arg_length": 3}
   ]
 }

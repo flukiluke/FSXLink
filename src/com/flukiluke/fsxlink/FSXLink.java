@@ -8,11 +8,17 @@ public class FSXLink {
     public static void main(String[] args) throws IOException {
         Config.loadConfigFile("config.json");
         List<Mapping> inputMappings = Config.getInputMappings();
+        List<Mapping> outputMappings = Config.getOutputMappings();
 
         SimulationConnector simulation = new SimulationConnector();
+
         for (Mapping m : inputMappings) {
             simulation.registerInputMapping(m);
         }
+        for (Mapping m : outputMappings) {
+            simulation.registerOutputMapping(m);
+        }
+
 
         Scanner input = new Scanner(System.in);
         while (input.hasNextLine()) {
