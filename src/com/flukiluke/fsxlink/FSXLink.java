@@ -21,11 +21,12 @@ public class FSXLink {
                 if (serialInput.startsWith(m.serialCommand)) {
                     int argument = 0;
                     if (m.argLength > 0) {
-                        argument = Integer.parseInt(serialInput.substring(m.serialCommand.length(), m.serialCommand.length() + m.argLength));
+                        argument = Integer.parseInt(serialInput.substring(m.serialCommand.length(),
+                                m.serialCommand.length() + (int)m.argLength));
                     }
                     System.out.println(m.simconnectName);
                     System.out.println(argument);
-                    // simulation.sendEvent(m, argument);
+                    simulation.sendEvent(m, argument);
                     break;
                 }
             }

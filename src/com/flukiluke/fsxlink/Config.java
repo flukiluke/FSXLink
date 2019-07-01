@@ -37,8 +37,8 @@ public class Config {
         JSONObject jsonSc = (JSONObject)config.get("simconnect");
         scConfig.put("appName", (String)jsonSc.get("app_name"));
         scConfig.setAddress((String)jsonSc.get("ip"));
-        scConfig.setPort((Integer)jsonSc.get("port"));
-        scConfig.setProtocol((Integer)jsonSc.get("ip_version"));
+        scConfig.setPort((int)(long)jsonSc.get("port"));
+        scConfig.setProtocol((int)(long)jsonSc.get("ip_version"));
         scConfig.put("simConnectProtocol", (String)jsonSc.get("protocol"));
         return scConfig;
     }
