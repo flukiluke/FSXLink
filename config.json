@@ -8,13 +8,26 @@
   },
 
   "input_map": [
-    {"name": "AP_ALT_VAR_SET_ENGLISH", "command": "a", "arg_length": 5},
-    {"name": "HEADING_BUG_SET", "command": "b", "arg_length": 3},
-    {"name": "AP_PANEL_ALTITUDE_HOLD", "command": "c", "arg_length":  0}
+    {"name": "AP_MASTER", "command": "aa", "arg_length": 0},
+    {"name": "AP_ALT_VAR_SET_ENGLISH", "command": "ab", "arg_length": 5},
+    {"name": "AP_PANEL_ALTITUDE_HOLD", "command": "ac", "arg_length":  0},
+    {"name": "HEADING_BUG_SET", "command": "ad", "arg_length": 3},
+    {"name": "AP_PANEL_HEADING_HOLD", "command": "ae", "arg_length": 0},
+    {"name": "AP_SPD_VAR_SET", "command": "af", "arg_length": 3},
+    {"name": "AP_PANEL_SPEED_HOLD", "command": "ag", "arg_length": 0},
+    {"name": "AUTO_THROTTLE_ARM", "command": "ah", "arg_length": 0},
+
+    {"name": "PAUSE_TOGGLE", "command": "sa", "arg_length": 0}
   ],
 
   "output_map": [
-    {"name": "AUTOPILOT ALTITUDE LOCK VAR", "unit": "feet", "command": "a", "arg_length": 5},
-    {"name": "AUTOPILOT HEADING LOCK DIR", "unit": "degrees", "command": "b", "arg_length": 3}
+    {"name": "AUTOPILOT MASTER", "unit": "boolean", "command": "aa", "arg_length": 1},
+    {"name": "AUTOPILOT ALTITUDE LOCK VAR", "unit": "feet", "command": "ab", "arg_length": 5},
+    {"name": "AUTOPILOT ALTITUDE LOCK", "unit": "boolean", "command": "ac", "arg_length": 1},
+    {"name": "AUTOPILOT HEADING LOCK DIR", "unit": "degrees", "command": "ad", "arg_length": 3},
+    {"name": "AUTOPILOT HEADING LOCK", "unit": "boolean", "command": "ae", "arg_length": 1},
+    {"name": "AUTOPILOT AIRSPEED HOLD VAR", "unit": "knots", "command": "af", "arg_length": 3},
+    {"name": "AUTOPILOT AIRSPEED HOLD", "unit": "boolean", "command": "ag", "arg_length": 1},
+    {"name": "AUTOPILOT THROTTLE ARM", "unit": "boolean", "command": "ah", "arg_length": 1}
   ]
 }
