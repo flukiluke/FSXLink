@@ -19,7 +19,6 @@ public class FSXLink {
             simulation.registerOutputMapping(m);
         }
 
-
         Scanner input = new Scanner(System.in);
         while (input.hasNextLine()) {
             String serialInput = input.nextLine();
@@ -30,8 +29,6 @@ public class FSXLink {
                         argument = Integer.parseInt(serialInput.substring(m.serialCommand.length(),
                                 m.serialCommand.length() + (int)m.argLength));
                     }
-                    System.out.println(m.simconnectName);
-                    System.out.println(argument);
                     simulation.sendEvent(m, argument);
                     break;
                 }
