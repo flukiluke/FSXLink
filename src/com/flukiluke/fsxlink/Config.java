@@ -10,7 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Config {
@@ -41,6 +43,14 @@ public class Config {
         scConfig.setProtocol((int)(long)jsonSc.get("ip_version"));
         scConfig.put("simConnectProtocol", (String)jsonSc.get("protocol"));
         return scConfig;
+    }
+
+    public static Map<String, String> getSerialConfig() {
+        HashMap<String, String> serialConfig = new HashMap<>();
+        JSONObject jsonSc = (JSONObject)config.get("serial");
+        serialConfig.put("device", (String)jsonSc.get("device"));
+        serialConfig.put("baud", (String)jsonSc.get("baud"));
+        return serialConfig;
     }
 
     public static List<Mapping> getInputMappings() {

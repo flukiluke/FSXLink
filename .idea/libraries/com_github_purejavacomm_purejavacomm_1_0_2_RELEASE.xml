@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="com.github.purejavacomm:purejavacomm:1.0.2.RELEASE" type="repository">
+    <properties maven-id="com.github.purejavacomm:purejavacomm:1.0.2.RELEASE" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/purejavacomm/purejavacomm/1.0.2.RELEASE/purejavacomm-1.0.2.RELEASE.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/java/dev/jna/jna/4.2.2/jna-4.2.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
