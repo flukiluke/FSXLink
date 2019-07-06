@@ -20,6 +20,7 @@ public class Config {
     public static final String SERIAL = "serial";
     public static final String DEVICE = "device";
     public static final String BAUD = "baud";
+    public static final String ECHO = "echo";
 
     public static final String MAPPINGS = "mappings";
     public static final String INPUT = "input";
@@ -73,6 +74,10 @@ public class Config {
             return (Integer) data.get(name);
         }
         return otherwise;
+    }
+
+    public Boolean getBoolean(String name) {
+        return (Boolean)data.get(name);
     }
 
     private Config(Map data) {

@@ -9,6 +9,7 @@ simConnect:
 serial:
   device: COM3
   baud: 9600
+  echo: true
 
 mappings:
   - input: AP_MASTER

@@ -13,9 +13,11 @@ public class SerialConnector {
     private InputStream input;
     private OutputStream output;
     private List<Mapping> mappingList = new ArrayList<>();
+    private boolean echo;
 
     public SerialConnector() throws IOException {
         Config serialConfig = Config.getConfig().getMap(Config.SERIAL);
+        echo = serialConfig.getBoolean(Config.ECHO);
         try {
             serialPort = (SerialPort) CommPortIdentifier
                     .getPortIdentifier(serialConfig.getString(Config.DEVICE))
@@ -73,6 +75,9 @@ public class SerialConnector {
         do {
             inputByte = input.read();
         } while (inputByte < 0);
+        if (echo) {
+            output.write(inputByte);
+        }
         return (char)inputByte;
     }
 }
