@@ -1,16 +1,30 @@
 package com.flukiluke.fsxlink;
 
 public class Mapping {
-    public final String simconnectName;
+    public final String inputName;
+    public final String outputName;
+    public final String command;
     public final String unit;
-    public final String serialCommand;
-    public final long argLength;
-    public Integer scID = null; // Assigned once this mapping is made known to FSX
+    public final Integer digits;
 
-    public Mapping(String simconnectName, String unit, String serialCommand, long argLength) {
-        this.simconnectName = simconnectName;
-        this.unit = unit;
-        this.serialCommand = serialCommand;
-        this.argLength = argLength;
+    public Integer eventId = 0;
+
+    public Mapping(Config c) {
+        this.inputName = c.getString(Config.INPUT);
+        this.outputName = c.getString(Config.OUTPUT);
+        this.command = c.getString(Config.COMMAND);
+        if (this.command == null) {
+            throw new IllegalArgumentException("No command specified for mapping");
+        }
+        this.unit = c.getString(Config.UNIT);
+        this.digits = c.getInteger(Config.DIGITS, 0);
     }
+
+    public boolean isInput() {
+        return inputName != null;
+    }
+
+    public boolean isOutput() {
+        return outputName != null;
+}
 }

@@ -1,0 +1,59 @@
+---
+simConnect:
+  appName: FSXLink
+  ip: 127.0.0.1
+  ipVersion: 4
+  port: 9017
+  protocol: 2
+
+serial:
+  device: COM3
+  baud: 9600
+
+mappings:
+  - input: AP_MASTER
+    output: AUTOPILOT MASTER
+    command: aa
+    unit: toggle
+
+  - input: AP_ALT_VAR_SET_ENGLISH
+    output: AUTOPILOT ALTITUDE LOCK VAR
+    command: ab
+    unit: feet
+    digits: 5
+
+  - input: AP_PANEL_ALTITUDE_HOLD
+    output: AUTOPILOT ALTITUDE LOCK
+    command: ac
+    unit: toggle
+
+  - input: HEADING_BUG_SET
+    output: AUTOPILOT HEADING LOCK DIR
+    command: ad
+    unit: degrees
+    digits: 3
+
+  - input: AP_PANEL_HEADING_HOLD
+    output: AUTOPILOT HEADING LOCK
+    command: ae
+    unit: toggle
+
+  - input: AP_SPD_VAR_SET
+    output: AUTOPILOT AIRSPEED HOLD VAR
+    command: af
+    unit: knots
+    digits: 3
+
+  - input: AP_PANEL_SPEED_HOLD
+    output: AUTOPILOT AIRSPEED HOLD
+    command: ag
+    unit: toggle
+
+  - input: AUTO_THROTTLE_ARM
+    output: AUTOPILOT THROTTLE ARM
+    command: ah
+    unit: toggle
+
+  - input: PAUSE_TOGGLE
+    command: sa
+    unit: toggle

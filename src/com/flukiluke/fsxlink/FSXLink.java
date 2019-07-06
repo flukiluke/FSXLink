@@ -1,67 +1,60 @@
 package com.flukiluke.fsxlink;
 
-import purejavacomm.*;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.List;
 
 public class FSXLink {
-    public static void main(String[] args) throws IOException, NoSuchPortException, PortInUseException, UnsupportedCommOperationException {
-        Config.loadConfigFile("config.json");
-        List<Mapping> inputMappings = Config.getInputMappings();
-        List<Mapping> outputMappings = Config.getOutputMappings();
+    public static final String CONFIG_FILE = "config.yml";
 
-        SimulationConnector simulation = new SimulationConnector();
+    private static SerialConnector serialConnector;
+    private static SimulationConnector simulationConnector;
 
-        for (Mapping m : inputMappings) {
-            simulation.registerInputMapping(m);
+    public static void main(String[] args) {
+        try {
+            Config.loadConfigFile(CONFIG_FILE);
+        } catch (IOException e) {
+            System.err.println("Problem loading config file: " + e.getLocalizedMessage());
+            System.exit(1);
         }
-        for (Mapping m : outputMappings) {
-            simulation.registerOutputMapping(m);
+        try {
+            serialConnector = new SerialConnector();
+        } catch (IOException e) {
+            System.err.println("Serial device error: " + e.getLocalizedMessage());
+            System.exit(1);
         }
+        try {
+            simulationConnector = new SimulationConnector();
+        } catch (IOException e) {
+            System.err.println("Problem connecting to Flight Simulator: " + e.getLocalizedMessage());
+            System.exit(1);
+        }
+        try {
+            registerMappings();
+            mainLoop();
+        } catch (IOException e) {
+            System.err.println("Communication failed: " + e.getLocalizedMessage());
+            System.exit(1);
+        }
+    }
 
-        SerialPort serialPort = (SerialPort)CommPortIdentifier.getPortIdentifier(Config.getSerialConfig().get("device")).open("sdf", 3);
-        serialPort.setSerialPortParams(Integer.parseInt(Config.getSerialConfig().get("baud")),
-                SerialPort.DATABITS_8,
-                SerialPort.STOPBITS_1,
-                SerialPort.PARITY_NONE);
-        serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-        InputStream input = serialPort.getInputStream();
-        OutputStream output = serialPort.getOutputStream();
+    private static void registerMappings() throws IOException {
+        for (Config c : Config.getConfig().getListOfMaps(Config.MAPPINGS)) {
+            Mapping m = new Mapping(c);
+            if (m.isInput()) {
+                serialConnector.registerInputMapping(m);
+                simulationConnector.registerInputMapping(m);
+            }
+            if (m.isOutput()) {
+                simulationConnector.registerOutputMapping(m);
+            }
+        }
+    }
 
-        String receivedCommand = "";
+    private static void mainLoop() throws IOException {
+        Command command;
         while (true) {
-            int i = input.read();
-            if (i == -1) {
-                System.out.println("Serial port closed");
-                break;
-            }
-            // Echo - useful when the serial device is in fact a human
-            // output.write((char)i);
-
-            receivedCommand += (char)i;
-            for (Mapping m : inputMappings) {
-                if (receivedCommand.startsWith(m.serialCommand)) {
-                    int argument = 0;
-                    if (m.argLength > 0) {
-                        byte[] receivedArgument = new byte[(int) m.argLength];
-                        int bytesRead = 0;
-                        while (bytesRead < m.argLength) {
-                            bytesRead += input.read(receivedArgument, bytesRead, (int) m.argLength - bytesRead);
-                        }
-                        output.write(receivedArgument);
-                        argument = Integer.parseInt(new String(receivedArgument));
-                    }
-                    System.out.println("        " + receivedCommand + argument);
-                    simulation.sendEvent(m, argument);
-                    receivedCommand = "";
-                    break;
-                }
-            }
+            command = serialConnector.readCommand();
+            System.out.format("%s%s\n",  command.mapping.command, command.argument);
+            simulationConnector.sendEvent(command);
         }
-        serialPort.close();
     }
 }

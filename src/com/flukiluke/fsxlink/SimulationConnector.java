@@ -16,43 +16,49 @@ public class SimulationConnector {
     public SimulationConnector() throws IOException {
         // Fill the 0 slot so that we can start counting from 1
         dataMappings.add(null);
-        Configuration simConnectConfig = Config.getSimConnectConfig();
-        simConnect = new SimConnect(simConnectConfig.get("appName"),
+        Config loadedConfig = Config.getConfig().getMap(Config.SIMCONNECT);
+        Configuration simConnectConfig = new Configuration();
+        simConnectConfig.setAddress(loadedConfig.getString(Config.IP));
+        simConnectConfig.setProtocol(loadedConfig.getInteger(Config.IPVERSION));
+        simConnectConfig.setPort(loadedConfig.getInteger(Config.PORT));
+
+        simConnect = new SimConnect(loadedConfig.getString(Config.APPNAME),
                 simConnectConfig,
-                simConnectConfig.getInt("simConnectProtocol", 2));
+                loadedConfig.getInteger(Config.PROTOCOL));
+
         DispatcherTask dt = new DispatcherTask(simConnect);
         dt.addSimObjectDataHandler((sender, e) -> {
-            Mapping mapping = dataMappings.get(e.getDefineID());
-            String value = String.format("%0" + mapping.argLength + "d", e.getDataInt32());
-            System.out.println(mapping.serialCommand + value);
+            // Send to serial
         });
-        new Thread(dt).start();
+        Thread t = new Thread(dt);
+        t.setDaemon(true);
+        t.start();
     }
 
     public void registerInputMapping(Mapping mapping) throws IOException {
-        mapping.scID = nextEventID++;
-        simConnect.mapClientEventToSimEvent(mapping.scID, mapping.simconnectName);
+        mapping.eventId = nextEventID++;
+        simConnect.mapClientEventToSimEvent(mapping.eventId, mapping.inputName);
     }
 
     public void registerOutputMapping(Mapping mapping) throws IOException {
         dataMappings.add(mapping);
-        mapping.scID = dataMappings.size() - 1;
-        simConnect.addToDataDefinition(mapping.scID,
-                mapping.simconnectName,
+        int dataId = dataMappings.size() - 1;
+        simConnect.addToDataDefinition(dataId,
+                mapping.outputName,
                 mapping.unit,
                 SimConnectDataType.INT32);
-        simConnect.requestDataOnSimObject(mapping.scID,
-                mapping.scID,
+        simConnect.requestDataOnSimObject(dataId,
+                dataId,
                 0,
                 SimConnectPeriod.SIM_FRAME,
                 SimConnectConstants.DATA_REQUEST_FLAG_CHANGED,
                 0, 0,0);
     }
 
-    public void sendEvent(Mapping mapping, int data) throws IOException {
+    public void sendEvent(Command command) throws IOException {
         simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
-                mapping.scID,
-                data,
+                command.mapping.eventId,
+                command.argument,
                 NotificationPriority.DEFAULT.ordinal(),
                 SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
     }

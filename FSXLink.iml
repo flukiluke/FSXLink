@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="com.github.purejavacomm:purejavacomm:1.0.2.RELEASE" level="project" />
+    <orderEntry type="library" name="org.yaml:snakeyaml:1.24" level="project" />
   </component>
 </module>

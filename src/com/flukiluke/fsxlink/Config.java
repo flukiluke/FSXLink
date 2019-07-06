@@ -1,79 +1,81 @@
 package com.flukiluke.fsxlink;
 
-import flightsim.simconnect.config.Configuration;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class Config {
-    private static JSONObject config;
+    // Literals used in the configuration
+    public static final String SIMCONNECT = "simConnect";
+    public static final String APPNAME = "appName";
+    public static final String IP = "ip";
+    public static final String IPVERSION = "ipVersion";
+    public static final String PORT = "port";
+    public static final String PROTOCOL = "protocol";
 
-    public static void loadConfigFile(String filename) {
-        JSONParser jsonParser = new JSONParser();
-        try {
-            FileReader fileReader = new FileReader(filename);
-            config = (JSONObject)jsonParser.parse(fileReader);
+    public static final String SERIAL = "serial";
+    public static final String DEVICE = "device";
+    public static final String BAUD = "baud";
+
+    public static final String MAPPINGS = "mappings";
+    public static final String INPUT = "input";
+    public static final String OUTPUT = "output";
+    public static final String COMMAND = "command";
+    public static final String UNIT = "unit";
+    public static final String TOGGLE = "toggle";
+    public static final String DIGITS = "digits";
+
+    private static Config config;
+    private Map data;
+
+    public static void loadConfigFile(String filename) throws IOException {
+        Yaml yaml = new Yaml(); //new Yaml(new CustomClassLoaderConstructor(Config.class.getClassLoader()));
+        config = new Config(yaml.load(new FileReader(filename)));
+    }
+
+    public static Config getConfig() {
+        return config;
+    }
+
+    public Config getMap(String name) {
+        return new Config((Map)data.get(name));
+    }
+
+    public List<Config> getListOfMaps(String name) {
+        List<Config> list = new ArrayList<>();
+        for (Map m : (List<Map>)data.get(name)) {
+            list.add(new Config(m));
         }
-        catch (FileNotFoundException e) {
-            System.err.println("Config file " + filename + " not found");
-            System.exit(1);
+        return list;
+    }
+
+    public String getString(String name) {
+        return (String)data.get(name);
+    }
+
+    public String getString(String name, String otherwise) {
+        if (data.containsKey(name)) {
+            return (String) data.get(name);
         }
-        catch (IOException|ParseException e) {
-            System.err.println("Error parsing " + filename + ": " + e.getLocalizedMessage());
-            System.exit(1);
+        return otherwise;
+    }
+
+    public Integer getInteger(String name) {
+        return (Integer)data.get(name);
+    }
+
+    public Integer getInteger(String name, Integer otherwise) {
+        if (data.containsKey(name)) {
+            return (Integer) data.get(name);
         }
+        return otherwise;
     }
 
-    public static Configuration getSimConnectConfig() {
-        Configuration scConfig = new Configuration();
-        JSONObject jsonSc = (JSONObject)config.get("simconnect");
-        scConfig.put("appName", (String)jsonSc.get("app_name"));
-        scConfig.setAddress((String)jsonSc.get("ip"));
-        scConfig.setPort((int)(long)jsonSc.get("port"));
-        scConfig.setProtocol((int)(long)jsonSc.get("ip_version"));
-        scConfig.put("simConnectProtocol", (String)jsonSc.get("protocol"));
-        return scConfig;
+    private Config(Map data) {
+        this.data = data;
     }
-
-    public static Map<String, String> getSerialConfig() {
-        HashMap<String, String> serialConfig = new HashMap<>();
-        JSONObject jsonSc = (JSONObject)config.get("serial");
-        serialConfig.put("device", (String)jsonSc.get("device"));
-        serialConfig.put("baud", (String)jsonSc.get("baud"));
-        return serialConfig;
-    }
-
-    public static List<Mapping> getInputMappings() {
-        return getMapping("input_map");
-    }
-
-    public static List<Mapping> getOutputMappings() {
-        return getMapping("output_map");
-    }
-
-    private static List<Mapping> getMapping(String fieldName) {
-        List<Mapping> mappings = new ArrayList<>();
-        JSONArray array = (JSONArray)config.get(fieldName);
-        for (Object o : array) {
-            JSONObject jsonMapping = (JSONObject)o;
-            mappings.add(new Mapping(
-                    (String)jsonMapping.get("name"),
-                    (String)jsonMapping.get("unit"),
-                    (String)jsonMapping.get("command"),
-                    (Long)jsonMapping.get("arg_length")
-                    ));
-        }
-        return mappings;
-    }
-
 }
