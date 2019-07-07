@@ -60,7 +60,7 @@ public class SimulationConnector {
     public void sendEvent(Command command) throws IOException {
         simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
                 command.mapping.eventId,
-                (command.argument != null ? command.argument : 0),
+                command.argument,
                 NotificationPriority.DEFAULT.ordinal(),
                 SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
     }
@@ -75,7 +75,7 @@ public class SimulationConnector {
         @Override
         public void handleSimObject(SimConnect sender, RecvSimObjectData e) {
             Mapping m = dataMappings.get(e.getDefineID());
-            if (m.digits == 0) {
+            if (m.digits == 0 && !m.isToggle) {
                 sink.sendCommand(new Command(m));
             } else {
                 sink.sendCommand(new Command(m, e.getDataInt32()));

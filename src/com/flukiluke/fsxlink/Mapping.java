@@ -6,6 +6,7 @@ public class Mapping {
     public final String command;
     public final String unit;
     public final Integer digits;
+    public final boolean isToggle;
 
     public Integer eventId = 0;
 
@@ -16,7 +17,14 @@ public class Mapping {
         if (this.command == null) {
             throw new IllegalArgumentException("No command specified for mapping");
         }
-        this.unit = c.getString(Config.UNIT);
+        if (c.getString(Config.UNIT).equals(Config.TOGGLE)) {
+            this.unit = "boolean";
+            this.isToggle = true;
+        }
+        else {
+            this.unit = c.getString(Config.UNIT);
+            this.isToggle = false;
+        }
         this.digits = c.getInteger(Config.DIGITS, 0);
     }
 
