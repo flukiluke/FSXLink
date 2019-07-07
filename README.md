@@ -1,28 +1,41 @@
 # FSXLink #
 
 ## About ##
-FSXLink is a tool capable of talking to both Microsoft Flight Simulator X (FSX) and serial-oriented devices such as Arduino boards, the idea being to control FSX and display simulation data with the Arduino. This is still a work in progress, and currently only gives you a command-line interface to talk to FSX.
+FSXLink is a tool capable of talking to both Microsoft Flight Simulator X (FSX) and serial-oriented devices such as Arduino boards, the idea being to control FSX and display simulation data with the Arduino. This is still a work in progress.
 
 ## Config file ##
-Simple json - copy the example config.json.
-- `simconnect.app_name` Arbitrary text field to identify the program connecting to FSX. Not actually shown anywhere, as far as I know.
-- `simconnect.ip` IP Address of FSX. This program can connect to instances running on another computer, otherwise use the loopback address 127.0.0.1 (or ::1 for IPv6).
-- `simconnect.ip_version` 4 for IPv4 or 6 for IPv6.
-- `simconnect.port` The port FSX is listening on. If in doubt [TCPView](https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview) can be used to find this value.
-- `simconnect.protocol` There are multiple versions of the connection protocol, released with newer versions of FSX. See the jsimconnect for details; leave as "2" if in doubt.
+A YAML file - edit the config.yml as needed.
 
-The `input_map` specifies a list of events to be triggered in FSX when a command is received from the serial input.
-- `name` FSX's name for the event, found on [Event IDs](https://www.prepar3d.com/SDKv4/sdk/references/variables/event_ids.html) in the SimConnect column.
-- `command` The command to expect from the serial input. Commands may be one or more characters long, but take care to ensure all commands are prefix codes; that is, no command is a prefix of another.
-- `arg_length` Some events take an integer value as an argument. This is the number of bytes after the command to interpret as a number string. If the command takes no argument, this is 0.
+- `simConnect.appName` Arbitrary text field to identify the program connecting to FSX. Not actually shown anywhere, as far as I know.
+- `simConnect.ip` IP Address of FSX. This program can connect to instances running on another computer, otherwise use the loopback address 127.0.0.1 (or ::1 for IPv6).
+- `simConnect.ipVersion` 4 for IPv4 or 6 for IPv6.
+- `simConnect.port` The port FSX is listening on. If in doubt [TCPView](https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview) can be used to find this value.
+- `simConnect.protocol` There are multiple versions (2, 3 and 4) of the connection protocol, released with newer versions of FSX. See the jsimconnect for details; leave as "2" if in doubt.
 
-The `output_map` lists variables to report from FSX to the serial device.
-- `name` FSX's name for the variable, taken from [Simulation Variables](https://www.prepar3d.com/SDKv4/sdk/references/variables/simulation_variables.html).
-- `unit` The unit of measurement for the value.
-- `command` The command to send to the serial device before the value. This may be one or more characters.
-- `arg_length` The number of characters to send the numeric value as, padding with zeros if needed.
+- `serial.device` Device file to open for serial communications.
+- `serial.baud` Baud rate to communicate at. Lower values may help if your device cannot process output fast enough.
+- `serial.echo` If set to true, received characters will be echoed back to device. Mostly useful for when the serial device is in fact a human.
+
+`mappings` specifies how FSX events and data attributes are conveyed to the serial device. Some attributes of a mapping are optional.
+- `code` One or more characters that are used in the serial communication protocol, in both directions. Any code must not be the prefix of another code, otherwise everyone will get very confused and sad.
+- `input` FSX's name for the event, found on [Event IDs](https://www.prepar3d.com/SDKv4/sdk/references/variables/event_ids.html) in the SimConnect column. When the serial device transmits appropriately, this event will be generated in FSX. If omitted, the serial device cannot send this mappings's code.
+- `output` FSX's name for the variable, taken from [Simulation Variables](https://www.prepar3d.com/SDKv4/sdk/references/variables/simulation_variables.html). The value of this variable will be transmitted to the serial device when it changes. If omitted, the serial device will never receive this mapping's code.
+- `digits` FSXLink uses a fixed width format for numeric values, zero-padded. This specifies the width in digits of the mapping's numeric argument.
+- `unit` Numeric data will be in a particular unit, such as 'feet' or 'knots'. This attribute what unit the value should be expressed in.
+
+## Serial Protocol ##
+Commands sent to the serial device consist of the `code` string followed by the number of digits in `digits`, zero-padded if necessary. In a similar fashion, commands from the serial device should consist of the `code` string followed by the number of digits in `digits`, zero-padded.
+
+### Toggles ###
+Some functions of FSX are simple on/off switches. If the event used for controlling it is described in the documentation as a "toggle" event, these instructions apply:
+- Set the `unit` attribute to `toggle`.
+- Do not include the `digits` attribute.
+
+When the serial device wishes to toggle the value, it should send the `code` string with no numeric argument. When FSXLinks reports back a change, it will send will a one-digit argument, either a 1 or 0 for on or off, respectively.
+
+If instead the input event is described as setting a switch to a particular position, set the `unit` to `boolean` and `digits` to 1.
 
 ## Licence ##
 FSXLink is released under the terms of the GNU General Public License version 3, contained in the COPYING file.
 
-This program uses [jsimconnect](https://github.com/mharj/jsimconnect), located in src/flightsim/ and doc/jsimconnect/. It is used under the terms of the GNU Lesser General Public License version 2.1, contained in the COPYING.LESSER file.
+This program includes [jsimconnect](https://github.com/mharj/jsimconnect), located in src/flightsim/ and doc/jsimconnect/. It is used and redistributed under the terms of the GNU Lesser General Public License version 2.1, contained in the COPYING.LESSER file.
