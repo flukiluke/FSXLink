@@ -9,17 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SerialConnector implements DataCommandSink {
-    private SerialPort serialPort;
     private InputStream input;
     private OutputStream output;
+    private PrefixTree mappings = new PrefixTree();
     private List<Mapping> mappingList = new ArrayList<>();
     private boolean echo;
 
     public SerialConnector() throws IOException {
         Config serialConfig = Config.getConfig().getMap(Config.SERIAL);
+        if (serialConfig.getString(Config.DEVICE).equals("console")) {
+            input = System.in;
+            output = System.out;
+            return;
+        }
         echo = serialConfig.getBoolean(Config.ECHO);
         try {
-            serialPort = (SerialPort) CommPortIdentifier
+            SerialPort serialPort = (SerialPort) CommPortIdentifier
                     .getPortIdentifier(serialConfig.getString(Config.DEVICE))
                     .open(getClass().getName(), 3);
             serialPort.setSerialPortParams(serialConfig.getInteger(Config.BAUD),
