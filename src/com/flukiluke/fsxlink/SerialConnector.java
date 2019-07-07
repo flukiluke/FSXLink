@@ -5,14 +5,11 @@ import purejavacomm.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SerialConnector implements DataCommandSink {
     private InputStream input;
     private OutputStream output;
-    private PrefixTree mappings = new PrefixTree();
-    private List<Mapping> mappingList = new ArrayList<>();
+    private PrefixTree<Mapping> mappings = new PrefixTree<>();
     private boolean echo;
 
     public SerialConnector() throws IOException {
@@ -42,7 +39,7 @@ public class SerialConnector implements DataCommandSink {
     }
 
     public void registerInputMapping(Mapping m) {
-        mappingList.add(m);
+        mappings.add(m.code, m);
     }
 
     public void sendCommand(Command command) {
@@ -56,29 +53,36 @@ public class SerialConnector implements DataCommandSink {
     }
 
     public Command readCommand() throws IOException {
-        StringBuilder buffer = new StringBuilder(10);
-        do {
-            buffer.append(readCharBlocking());
-            for (Mapping m : mappingList) {
-                if (m.code.contentEquals(buffer)) {
-                    if (m.digits == 0) {
-                        return new Command(m);
+        String buffer = "";
+        while (true) {
+            char c = readCharBlocking();
+            if (!mappings.isValidPrefix(buffer + c)) {
+                System.err.println("Warning: received junk from serial device: " + buffer + c);
+                buffer = "";
+            }
+            buffer += c;
+
+            Mapping m = mappings.get(buffer);
+            if (m != null) {
+                if (m.digits == 0) {
+                    return new Command(m);
+                } else {
+                    Integer argument = readArgument(m.digits);
+                    if (argument == null) {
+                        continue;
                     }
-                    else {
-                        return new Command(m, readArgument(m.digits));
-                    }
+                    return new Command(m, argument);
                 }
             }
-        } while (buffer.length() < buffer.capacity());
-        throw new IOException("Received junk from serial device");
+        }
     }
 
-    private int readArgument(int digits) throws IOException {
+    private Integer readArgument(int digits) throws IOException {
         StringBuilder buffer = new StringBuilder(digits);
         for (int i = 0; i < digits; i++) {
             char digit = readCharBlocking();
             if (!Character.isDigit(digit)) {
-                throw new IOException("Expected digit from serial device");
+                return null;
             }
             buffer.append(digit);
         }
