@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerialConnector {
+public class SerialConnector implements DataCommandSink {
     private SerialPort serialPort;
     private InputStream input;
     private OutputStream output;
@@ -38,6 +38,16 @@ public class SerialConnector {
 
     public void registerInputMapping(Mapping m) {
         mappingList.add(m);
+    }
+
+    public void sendCommand(Command command) {
+        try {
+            output.write(command.toString().getBytes());
+        }
+        catch (IOException e) {
+            System.err.println("Serial communications error");
+            System.exit(1);
+        }
     }
 
     public Command readCommand() throws IOException {

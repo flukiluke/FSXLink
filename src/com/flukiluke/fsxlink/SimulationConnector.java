@@ -3,6 +3,8 @@ package com.flukiluke.fsxlink;
 import flightsim.simconnect.*;
 import flightsim.simconnect.config.Configuration;
 import flightsim.simconnect.recv.DispatcherTask;
+import flightsim.simconnect.recv.RecvSimObjectData;
+import flightsim.simconnect.recv.SimObjectDataHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,11 +27,11 @@ public class SimulationConnector {
         simConnect = new SimConnect(loadedConfig.getString(Config.APPNAME),
                 simConnectConfig,
                 loadedConfig.getInteger(Config.PROTOCOL));
+    }
 
+    public void startDataHandler(DataCommandSink sink) {
         DispatcherTask dt = new DispatcherTask(simConnect);
-        dt.addSimObjectDataHandler((sender, e) -> {
-            // Send to serial
-        });
+        dt.addSimObjectDataHandler(new DataHandler(sink));
         Thread t = new Thread(dt);
         t.setDaemon(true);
         t.start();
@@ -58,8 +60,26 @@ public class SimulationConnector {
     public void sendEvent(Command command) throws IOException {
         simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
                 command.mapping.eventId,
-                command.argument,
+                (command.argument != null ? command.argument : 0),
                 NotificationPriority.DEFAULT.ordinal(),
                 SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
+    }
+
+    private class DataHandler implements SimObjectDataHandler {
+        private DataCommandSink sink;
+
+        public DataHandler(DataCommandSink sink) {
+            this.sink = sink;
+        }
+
+        @Override
+        public void handleSimObject(SimConnect sender, RecvSimObjectData e) {
+            Mapping m = dataMappings.get(e.getDefineID());
+            if (m.digits == 0) {
+                sink.sendCommand(new Command(m));
+            } else {
+                sink.sendCommand(new Command(m, e.getDataInt32()));
+            }
+        }
     }
 }

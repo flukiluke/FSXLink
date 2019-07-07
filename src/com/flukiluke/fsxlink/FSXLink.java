@@ -29,6 +29,7 @@ public class FSXLink {
         }
         try {
             registerMappings();
+            simulationConnector.startDataHandler(serialConnector);
             mainLoop();
         } catch (IOException e) {
             System.err.println("Communication failed: " + e.getLocalizedMessage());
@@ -53,7 +54,7 @@ public class FSXLink {
         Command command;
         while (true) {
             command = serialConnector.readCommand();
-            System.out.format("%s%s\n",  command.mapping.command, command.argument);
+            System.out.println(command);
             simulationConnector.sendEvent(command);
         }
     }
