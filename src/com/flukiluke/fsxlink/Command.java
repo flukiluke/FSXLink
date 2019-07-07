@@ -20,9 +20,9 @@ public class Command {
     @Override
     public String toString() {
         if (!hasArgument && !mapping.isToggle) {
-            return mapping.command;
+            return mapping.code;
         }
         int digits = mapping.isToggle ? 1 : mapping.digits;
-        return mapping.command + String.format("%0" + digits + "d", argument);
+        return mapping.code + String.format("%0" + digits + "d", argument);
     }
 }

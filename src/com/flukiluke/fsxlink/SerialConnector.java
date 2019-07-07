@@ -55,7 +55,7 @@ public class SerialConnector implements DataCommandSink {
         do {
             buffer.append(readCharBlocking());
             for (Mapping m : mappingList) {
-                if (m.command.contentEquals(buffer)) {
+                if (m.code.contentEquals(buffer)) {
                     if (m.digits == 0) {
                         return new Command(m);
                     }
