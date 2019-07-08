@@ -3,11 +3,11 @@ simConnect:
   appName: FSXLink
   ip: 127.0.0.1
   ipVersion: 4
-  port: 9017
+  port: 53178
   protocol: 2
 
 serial:
-  device: COM3
+  device: console
   baud: 9600
   echo: true
 
@@ -57,4 +57,6 @@ mappings:
 
   - input: PAUSE_TOGGLE
     code: sa
-    unit: toggle
+
+  - input: ABORT
+    code: sx

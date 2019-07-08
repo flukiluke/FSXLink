@@ -17,7 +17,11 @@ public class Mapping {
         if (this.code == null) {
             throw new IllegalArgumentException("No code specified for mapping");
         }
-        if (c.getString(Config.UNIT).equals(Config.TOGGLE)) {
+        if (c.getString(Config.UNIT) == null) {
+            this.unit = "";
+            this.isToggle = false;
+        }
+        else if (c.getString(Config.UNIT).equals(Config.TOGGLE)) {
             this.unit = "boolean";
             this.isToggle = true;
         }
