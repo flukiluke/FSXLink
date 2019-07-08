@@ -93,7 +93,7 @@ public class SerialConnector implements DataCommandSink {
         int inputByte;
         do {
             inputByte = input.read();
-        } while (inputByte < 0);
+        } while (inputByte < 0 || inputByte == '\r' || inputByte == '\n');
         if (echo) {
             output.write(inputByte);
         }
