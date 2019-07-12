@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class SerialConnector implements DataCommandSink {
+    private static final int READ_BUFFER_SIZE = 10;
     private InputStream input;
     private OutputStream output;
     private PrefixTree<Mapping> mappings = new PrefixTree<>();
@@ -44,7 +45,7 @@ public class SerialConnector implements DataCommandSink {
 
     public void sendCommand(Command command) {
         try {
-            output.write(command.toString().getBytes());
+            output.write((command.toString() + '\n').getBytes());
         }
         catch (IOException e) {
             System.err.println("Serial communications error");
@@ -53,28 +54,58 @@ public class SerialConnector implements DataCommandSink {
     }
 
     public Command readCommand() throws IOException {
-        String buffer = "";
-        while (true) {
-            char c = readCharBlocking();
-            if (!mappings.isValidPrefix(buffer + c)) {
-                System.err.println("Warning: received junk from serial device: " + buffer + c);
-                buffer = "";
-            }
-            buffer += c;
+        String buffer = readLine();
+        int codeLength = 1;
+        while (codeLength <= buffer.length() && mappings.isValidPrefix(buffer.substring(0, codeLength))) {
+            codeLength++;
+        }
+        codeLength--;
 
-            Mapping m = mappings.get(buffer);
-            if (m != null) {
-                if (m.digits == 0) {
-                    return new Command(m);
-                } else {
-                    Integer argument = readArgument(m.digits);
-                    if (argument == null) {
-                        continue;
-                    }
-                    return new Command(m, argument);
-                }
+        Mapping m = mappings.get(buffer.substring(0, codeLength));
+        if (m == null) {
+            System.err.println("Got unknown command from serial device: " + buffer);
+            return null;
+        }
+
+        if (m.digits == 0) {
+            return new Command(m);
+        }
+
+        if (buffer.length() - codeLength > m.digits) {
+            System.err.println("Warning: serial device sent overlong argument");
+        }
+        Integer argument;
+        try {
+            argument = Integer.parseInt(buffer.substring(codeLength));
+        }
+        catch (NumberFormatException e) {
+            System.err.println("Argument from serial device is not an integer: " + buffer.substring(codeLength));
+            return null;
+        }
+        catch (IndexOutOfBoundsException e) {
+            System.err.println("Serial device omitted argument to code " + m.code);
+            return null;
+        }
+        return new Command(m, argument);
+    }
+
+
+    private String readLine() throws IOException {
+        StringBuilder buffer = new StringBuilder(10);
+
+        // Read in data until newline
+        while(true)  {
+            char c = readCharBlocking();
+            if (c == '\n') {
+                break;
+            }
+            buffer.append(c);
+            if (buffer.length() > READ_BUFFER_SIZE) {
+                System.err.println("Serial read buffer full without newline marker, emptying buffer");
+                buffer.delete(0, buffer.length());
             }
         }
+        return buffer.toString();
     }
 
     private Integer readArgument(int digits) throws IOException {
@@ -93,7 +124,7 @@ public class SerialConnector implements DataCommandSink {
         int inputByte;
         do {
             inputByte = input.read();
-        } while (inputByte < 0 || inputByte == '\r' || inputByte == '\n');
+        } while (inputByte < 0 || inputByte == '\r');
         if (echo) {
             output.write(inputByte);
         }

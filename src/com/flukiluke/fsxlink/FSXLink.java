@@ -54,6 +54,9 @@ public class FSXLink {
         Command command;
         while (true) {
             command = serialConnector.readCommand();
+            if (command == null) {
+                continue;
+            }
             simulationConnector.sendEvent(command);
         }
     }

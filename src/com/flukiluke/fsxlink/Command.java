@@ -3,7 +3,7 @@ package com.flukiluke.fsxlink;
 public class Command {
     public final Mapping mapping;
     public final boolean hasArgument;
-    public final int argument;
+    public final Integer argument;
 
     public Command(Mapping mapping) {
         this.mapping = mapping;
@@ -22,7 +22,6 @@ public class Command {
         if (!hasArgument && !mapping.isToggle) {
             return mapping.code;
         }
-        int digits = mapping.isToggle ? 1 : mapping.digits;
-        return mapping.code + String.format("%0" + digits + "d", argument);
+        return mapping.code + argument.toString();
     }
 }
