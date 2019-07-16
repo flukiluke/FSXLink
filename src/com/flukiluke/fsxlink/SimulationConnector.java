@@ -75,7 +75,7 @@ public class SimulationConnector {
         @Override
         public void handleSimObject(SimConnect sender, RecvSimObjectData e) {
             Mapping m = dataMappings.get(e.getDefineID());
-            if (m.digits == 0 && !m.isToggle) {
+            if (m.unit == null) {
                 sink.sendCommand(new Command(m));
             } else {
                 sink.sendCommand(new Command(m, e.getDataInt32()));

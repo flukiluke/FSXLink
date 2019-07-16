@@ -67,23 +67,16 @@ public class SerialConnector implements DataCommandSink {
             return null;
         }
 
-        if (m.digits == 0) {
+        if (codeLength == buffer.length()) {
             return new Command(m);
         }
 
-        if (buffer.length() - codeLength > m.digits) {
-            System.err.println("Warning: serial device sent overlong argument");
-        }
         Integer argument;
         try {
             argument = Integer.parseInt(buffer.substring(codeLength));
         }
         catch (NumberFormatException e) {
             System.err.println("Argument from serial device is not an integer: " + buffer.substring(codeLength));
-            return null;
-        }
-        catch (IndexOutOfBoundsException e) {
-            System.err.println("Serial device omitted argument to code " + m.code);
             return null;
         }
         return new Command(m, argument);

@@ -5,7 +5,6 @@ public class Mapping {
     public final String outputName;
     public final String code;
     public final String unit;
-    public final Integer digits;
     public final boolean isToggle;
 
     public Integer eventId = 0;
@@ -29,7 +28,6 @@ public class Mapping {
             this.unit = c.getString(Config.UNIT);
             this.isToggle = false;
         }
-        this.digits = c.getInteger(Config.DIGITS, 0);
     }
 
     public boolean isInput() {

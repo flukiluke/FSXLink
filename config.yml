@@ -21,7 +21,6 @@ mappings:
     output: AUTOPILOT ALTITUDE LOCK VAR
     code: ab
     unit: feet
-    digits: 5
 
   - input: AP_PANEL_ALTITUDE_HOLD
     output: AUTOPILOT ALTITUDE LOCK
@@ -32,7 +31,6 @@ mappings:
     output: AUTOPILOT HEADING LOCK DIR
     code: ad
     unit: degrees
-    digits: 3
 
   - input: AP_PANEL_HEADING_HOLD
     output: AUTOPILOT HEADING LOCK
@@ -43,7 +41,6 @@ mappings:
     output: AUTOPILOT AIRSPEED HOLD VAR
     code: af
     unit: knots
-    digits: 3
 
   - input: AP_PANEL_SPEED_HOLD
     output: AUTOPILOT AIRSPEED HOLD
@@ -53,6 +50,31 @@ mappings:
   - input: AUTO_THROTTLE_ARM
     output: AUTOPILOT THROTTLE ARM
     code: ah
+    unit: toggle
+
+  - input: YAW_DAMPER_TOGGLE
+    output:  AUTOPILOT YAW DAMPER
+    code: ai
+    unit: toggle
+
+  - input: AP_PANEL_MACH_HOLD
+    output: AUTOPILOT MACH HOLD
+    code: aj
+    unit: toggle
+
+  - input: TOGGLE_FLIGHT_DIRECTOR
+    output: AUTOPILOT FLIGHT DIRECTOR ACTIVE
+    code: ak
+    unit: toggle
+
+  - input: AP_BC_HOLD
+    output: AUTOPILOT BACKCOURSE HOLD
+    code: al
+    unit: toggle
+
+  - input: AP_NAV1_HOLD
+    output: AUTOPILOT NAV1 LOCK
+    code: am
     unit: toggle
 
   - input: PAUSE_TOGGLE

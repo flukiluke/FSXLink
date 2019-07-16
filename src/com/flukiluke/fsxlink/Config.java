@@ -28,7 +28,6 @@ public class Config {
     public static final String CODE = "code";
     public static final String UNIT = "unit";
     public static final String TOGGLE = "toggle";
-    public static final String DIGITS = "digits";
 
     private static Config config;
     private Map data;
