@@ -52,30 +52,33 @@ mappings:
     code: ah
     unit: toggle
 
-  - input: YAW_DAMPER_TOGGLE
-    output:  AUTOPILOT YAW DAMPER
-    code: ai
-    unit: toggle
-
-  - input: AP_PANEL_MACH_HOLD
-    output: AUTOPILOT MACH HOLD
-    code: aj
-    unit: toggle
-
   - input: TOGGLE_FLIGHT_DIRECTOR
     output: AUTOPILOT FLIGHT DIRECTOR ACTIVE
-    code: ak
-    unit: toggle
-
-  - input: AP_BC_HOLD
-    output: AUTOPILOT BACKCOURSE HOLD
-    code: al
+    code: ai
     unit: toggle
 
   - input: AP_NAV1_HOLD
     output: AUTOPILOT NAV1 LOCK
-    code: am
+    code: aj
     unit: toggle
+
+  - input: AP_APR_HOLD
+    output: AUTOPILOT APPROACH HOLD
+    code: ak
+    unit: toggle
+
+  - input: VOR1_SET
+    output: NAV OBS:1
+    unit: degrees
+    code: al
+
+  - input: AP_VS_VAR_SET_ENGLISH
+    output: AUTOPILOT VERTICAL HOLD VAR
+    unit: feet/minute
+    code: am
+
+  - input: AP_WING_LEVELER
+    code: an
 
   - input: PAUSE_TOGGLE
     code: sa
