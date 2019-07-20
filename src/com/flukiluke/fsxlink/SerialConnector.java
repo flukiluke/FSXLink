@@ -12,10 +12,13 @@ public class SerialConnector implements DataCommandSink {
     private OutputStream output;
     private PrefixTree<Mapping> mappings = new PrefixTree<>();
     private boolean echo;
+    private String address;
+    private String deviceName;
 
     public SerialConnector() throws IOException {
         Config serialConfig = Config.getConfig().getMap(Config.SERIAL);
-        if (serialConfig.getString(Config.DEVICE).equals("console")) {
+        address = serialConfig.getString(Config.DEVICE);
+        if (address.equals("console")) {
             input = System.in;
             output = System.out;
             return;
@@ -23,7 +26,7 @@ public class SerialConnector implements DataCommandSink {
         echo = serialConfig.getBoolean(Config.ECHO);
         try {
             SerialPort serialPort = (SerialPort) CommPortIdentifier
-                    .getPortIdentifier(serialConfig.getString(Config.DEVICE))
+                    .getPortIdentifier(address)
                     .open(getClass().getName(), 3);
             serialPort.setSerialPortParams(serialConfig.getInteger(Config.BAUD),
                     SerialPort.DATABITS_8,
@@ -37,6 +40,7 @@ public class SerialConnector implements DataCommandSink {
             throw new IOException("Connection to serial device at " + serialConfig.getString(Config.DEVICE)
                                     + " failed: " + e.toString());
         }
+        sendHandshake();
     }
 
     public void registerInputMapping(Mapping m) {
@@ -55,6 +59,10 @@ public class SerialConnector implements DataCommandSink {
 
     public Command readCommand() throws IOException {
         String buffer = readLine();
+        if (buffer.length() > 1 && buffer.charAt(0) == '@') {
+            deviceName = buffer.substring(1);
+            return null;
+        }
         int codeLength = 1;
         while (codeLength <= buffer.length() && mappings.isValidPrefix(buffer.substring(0, codeLength))) {
             codeLength++;
@@ -82,6 +90,9 @@ public class SerialConnector implements DataCommandSink {
         return new Command(m, argument);
     }
 
+    private void sendHandshake() throws IOException {
+        output.write("?\n".getBytes());
+    }
 
     private String readLine() throws IOException {
         StringBuilder buffer = new StringBuilder(10);
@@ -101,19 +112,7 @@ public class SerialConnector implements DataCommandSink {
         return buffer.toString();
     }
 
-    private Integer readArgument(int digits) throws IOException {
-        StringBuilder buffer = new StringBuilder(digits);
-        for (int i = 0; i < digits; i++) {
-            char digit = readCharBlocking();
-            if (!Character.isDigit(digit)) {
-                return null;
-            }
-            buffer.append(digit);
-        }
-        return Integer.parseInt(buffer.toString());
-    }
-
-    private char readCharBlocking() throws IOException {
+    private Character readCharBlocking() throws IOException {
         int inputByte;
         do {
             inputByte = input.read();

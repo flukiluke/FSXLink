@@ -7,7 +7,7 @@ simConnect:
   protocol: 2
 
 serial:
-  device: console
+  device: COM4
   baud: 9600
   echo: true
 
