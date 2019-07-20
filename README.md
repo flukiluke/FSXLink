@@ -25,6 +25,8 @@ A YAML file - edit the config.yml as needed.
 ## Serial Protocol ##
 Commands sent to the serial device consist of the `code` string, followed by a numeric argument (if present), then finally a newline (ASCII 10, '\n') character. In a similar fashion, commands from the serial device should consist of the `code` string, any numeric argument, then the newline character.
 
+On start, FSXLink will interrogate the serial device by ending the character '?' and a newline. The device should reply with the '@' character, followed by a string identifier and a newline. The identifier may be up to 9 characters long. Currently the identifier is not used for anything, but in future will be used for multiple device support. The device may also send the '@' + identifier command unsolicited at any time.
+
 ### Toggles ###
 Some functions of FSX are simple on/off switches. If the event used for controlling it is described in the documentation as a "toggle" event and you are also outputting that variable, set the `unit` attribute to `toggle`.
 

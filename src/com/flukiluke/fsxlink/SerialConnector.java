@@ -95,7 +95,7 @@ public class SerialConnector implements DataCommandSink {
     }
 
     private String readLine() throws IOException {
-        StringBuilder buffer = new StringBuilder(10);
+        StringBuilder buffer = new StringBuilder(READ_BUFFER_SIZE);
 
         // Read in data until newline
         while(true)  {
