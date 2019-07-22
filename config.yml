@@ -1,10 +1,6 @@
 ---
 simConnect:
   appName: FSXLink
-  ip: 127.0.0.1
-  ipVersion: 4
-  port: 53178
-  protocol: 2
 
 serial:
   device: console

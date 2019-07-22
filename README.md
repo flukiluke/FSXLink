@@ -7,11 +7,12 @@ FSXLink is a tool capable of talking to both Microsoft Flight Simulator X (FSX) 
 A YAML file - edit the config.yml as needed.
 
 - `simConnect.appName` Arbitrary text field to identify the program connecting to FSX. Not actually shown anywhere, as far as I know.
-- `simConnect.ip` IP Address of FSX. This program can connect to instances running on another computer, otherwise use the loopback address 127.0.0.1 (or ::1 for IPv6).
-- `simConnect.ipVersion` 4 for IPv4 or 6 for IPv6.
-- `simConnect.port` The port FSX is listening on. If in doubt [TCPView](https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview) can be used to find this value.
-- `simConnect.protocol` There are multiple versions (2, 3 and 4) of the connection protocol, released with newer versions of FSX. See the jsimconnect for details; leave as "2" if in doubt.
 
+If you are running FSXLink on the same computer as FSX, you don't need these next two options. They are only needed if you are connecting to FSX over a network.
+- `simConnect.ip` IP Address of remote computer running FSX. Supports IPv4 and IPv6 addresses.
+- `simConnect.port` The port FSX is listening on. By default FSX picks a port at random; you can change that behaviour with [SimConnect Config Tool](https://github.com/jtreml/simconnect-config-tool).
+
+The `serial` block sets configuration for the serial device. Currently we only support a single device.
 - `serial.device` Device file to open for serial communications.
 - `serial.baud` Baud rate to communicate at. Lower values may help if your device cannot process output fast enough.
 - `serial.echo` If set to true, received characters will be echoed back to device. Mostly useful for when the serial device is in fact a human.

@@ -15,18 +15,30 @@ public class SimulationConnector {
     private int nextEventID = 1;
     private List<Mapping> dataMappings = new ArrayList<>();
 
+    private Configuration makeConnectionConfig(Config loadedConfig) {
+        Configuration simConnectConfig = new Configuration();
+        if (loadedConfig.getString(Config.IP) == null) {
+            simConnectConfig.setAddress("::1");
+            simConnectConfig.setPort(Configuration.findSimConnectPortIPv6());
+            simConnectConfig.setProtocol(6);
+        }
+        else {
+            simConnectConfig.setAddress(loadedConfig.getString(Config.IP));
+            simConnectConfig.setPort(loadedConfig.getInteger(Config.PORT));
+            simConnectConfig.setProtocol(loadedConfig.getString(Config.IP).indexOf(':') >= 0 ? 6 : 4);
+        }
+        return simConnectConfig;
+    }
+
     public SimulationConnector() throws IOException {
         // Fill the 0 slot so that we can start counting from 1
         dataMappings.add(null);
         Config loadedConfig = Config.getConfig().getMap(Config.SIMCONNECT);
-        Configuration simConnectConfig = new Configuration();
-        simConnectConfig.setAddress(loadedConfig.getString(Config.IP));
-        simConnectConfig.setProtocol(loadedConfig.getInteger(Config.IPVERSION));
-        simConnectConfig.setPort(loadedConfig.getInteger(Config.PORT));
+        Configuration simConnectConfig = makeConnectionConfig(loadedConfig);
 
         simConnect = new SimConnect(loadedConfig.getString(Config.APPNAME),
                 simConnectConfig,
-                loadedConfig.getInteger(Config.PROTOCOL));
+                2); // Version 2 is supported by all versions of FSX
     }
 
     public void startDataHandler(DataCommandSink sink) {
