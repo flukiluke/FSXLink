@@ -32,7 +32,7 @@ public class SerialConnector implements DataCommandSink {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_OUT);
             input = serialPort.getInputStream();
             output = serialPort.getOutputStream();
         }
@@ -48,6 +48,7 @@ public class SerialConnector implements DataCommandSink {
     }
 
     public void sendCommand(Command command) {
+        System.out.println(command);
         try {
             output.write((command.toString() + '\n').getBytes());
         }
@@ -109,6 +110,7 @@ public class SerialConnector implements DataCommandSink {
                 buffer.delete(0, buffer.length());
             }
         }
+        System.out.println("        " + buffer);
         return buffer.toString();
     }
 

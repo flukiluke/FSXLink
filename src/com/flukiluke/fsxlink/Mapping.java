@@ -1,16 +1,25 @@
 package com.flukiluke.fsxlink;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Mapping {
-    public final String inputName;
+    public final List<String> inputNames;
     public final String outputName;
     public final String code;
     public final String unit;
     public final boolean isToggle;
 
-    public Integer eventId = 0;
+    public Integer baseEventId = 0;
 
     public Mapping(Config c) {
-        this.inputName = c.getString(Config.INPUT);
+        if (c.isList(Config.INPUT)) {
+            this.inputNames = c.getListOfStrings(Config.INPUT);
+        }
+        else {
+            this.inputNames = new ArrayList<>();
+            this.inputNames.add(c.getString(Config.INPUT));
+        }
         this.outputName = c.getString(Config.OUTPUT);
         this.code = c.getString(Config.CODE);
         if (this.code == null) {
@@ -31,7 +40,7 @@ public class Mapping {
     }
 
     public boolean isInput() {
-        return inputName != null;
+        return inputNames != null;
     }
 
     public boolean isOutput() {

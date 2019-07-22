@@ -53,6 +53,14 @@ public class Config {
         return list;
     }
 
+    public boolean isList(String name) {
+        return data.get(name) instanceof List;
+    }
+
+    public List<String> getListOfStrings(String name) {
+        return (List<String>)data.get(name);
+    }
+
     public String getString(String name) {
         return (String)data.get(name);
     }

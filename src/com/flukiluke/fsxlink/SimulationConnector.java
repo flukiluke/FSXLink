@@ -38,8 +38,10 @@ public class SimulationConnector {
     }
 
     public void registerInputMapping(Mapping mapping) throws IOException {
-        mapping.eventId = nextEventID++;
-        simConnect.mapClientEventToSimEvent(mapping.eventId, mapping.inputName);
+        mapping.baseEventId = nextEventID;
+        for (String m : mapping.inputNames) {
+            simConnect.mapClientEventToSimEvent(nextEventID++, m);
+        }
     }
 
     public void registerOutputMapping(Mapping mapping) throws IOException {
@@ -58,11 +60,13 @@ public class SimulationConnector {
     }
 
     public void sendEvent(Command command) throws IOException {
-        simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
-                command.mapping.eventId,
-                command.argument,
-                NotificationPriority.DEFAULT.ordinal(),
-                SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
+        for (int i = 0; i < command.mapping.inputNames.size(); i++) {
+            simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
+                    command.mapping.baseEventId + i,
+                    command.argument,
+                    NotificationPriority.DEFAULT.ordinal(),
+                    SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
+        }
     }
 
     private class DataHandler implements SimObjectDataHandler {
