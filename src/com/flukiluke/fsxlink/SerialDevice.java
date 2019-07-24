@@ -6,24 +6,54 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class SerialConnector implements DataCommandSink {
+public class SerialDevice extends Thread {
+    public static final int SERIAL_TIMEOUT = 1000;
     private static final int READ_BUFFER_SIZE = 10;
     private InputStream input;
     private OutputStream output;
     private PrefixTree<Mapping> mappings = new PrefixTree<>();
-    private boolean echo;
-    private String address;
-    private String deviceName;
+    public String deviceName;
 
-    public SerialConnector() throws IOException {
+    public SerialDevice(CommPortIdentifier portid, int baud) throws IOException {
+        try {
+            SerialPort serialPort = (SerialPort) portid.open(getClass().getName(), SERIAL_TIMEOUT);
+            serialPort.setSerialPortParams(baud,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_OUT);
+            input = serialPort.getInputStream();
+            output = serialPort.getOutputStream();
+        }
+        catch (PortInUseException | UnsupportedCommOperationException e) {
+            throw new IOException("Connection to serial device at " + portid.getName()
+                    + " failed: " + e.toString());
+        }
+        sendHandshake();
+        start();
+    }
+
+    @Override
+    public void run() {
+        while (!interrupted()) {
+            try {
+                readCommand();
+            }
+            catch (IOException e) {
+                System.err.println(e);
+                interrupt();
+            }
+        }
+    }
+
+    public SerialDevice() throws IOException {
         Config serialConfig = Config.getConfig().getMap(Config.SERIAL);
-        address = serialConfig.getString(Config.DEVICE);
+        String address = serialConfig.getString(Config.DEVICE);
         if (address.equals("console")) {
             input = System.in;
             output = System.out;
             return;
         }
-        echo = serialConfig.getBoolean(Config.ECHO);
         try {
             SerialPort serialPort = (SerialPort) CommPortIdentifier
                     .getPortIdentifier(address)
@@ -41,6 +71,7 @@ public class SerialConnector implements DataCommandSink {
                                     + " failed: " + e.toString());
         }
         sendHandshake();
+        start();
     }
 
     public void registerInputMapping(Mapping m) {
@@ -64,6 +95,7 @@ public class SerialConnector implements DataCommandSink {
             deviceName = buffer.substring(1);
             return null;
         }
+        System.out.println("        " + buffer);
         int codeLength = 1;
         while (codeLength <= buffer.length() && mappings.isValidPrefix(buffer.substring(0, codeLength))) {
             codeLength++;
@@ -110,7 +142,6 @@ public class SerialConnector implements DataCommandSink {
                 buffer.delete(0, buffer.length());
             }
         }
-        System.out.println("        " + buffer);
         return buffer.toString();
     }
 
@@ -119,9 +150,6 @@ public class SerialConnector implements DataCommandSink {
         do {
             inputByte = input.read();
         } while (inputByte < 0 || inputByte == '\r');
-        if (echo) {
-            output.write(inputByte);
-        }
         return (char)inputByte;
     }
 }

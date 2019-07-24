@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimulationConnector {
+public class FSXSimulation implements Simulation {
     private SimConnect simConnect;
     private int nextEventID = 1;
     private List<Mapping> dataMappings = new ArrayList<>();
@@ -30,7 +30,7 @@ public class SimulationConnector {
         return simConnectConfig;
     }
 
-    public SimulationConnector() throws IOException {
+    public FSXSimulation() throws IOException {
         // Fill the 0 slot so that we can start counting from 1
         dataMappings.add(null);
         Config loadedConfig = Config.getConfig().getMap(Config.SIMCONNECT);
@@ -41,7 +41,8 @@ public class SimulationConnector {
                 2); // Version 2 is supported by all versions of FSX
     }
 
-    public void startDataHandler(DataCommandSink sink) {
+    @Override
+    public void startDataHandler(SerialDevice sink) {
         DispatcherTask dt = new DispatcherTask(simConnect);
         dt.addSimObjectDataHandler(new DataHandler(sink));
         Thread t = new Thread(dt);
@@ -49,6 +50,7 @@ public class SimulationConnector {
         t.start();
     }
 
+    @Override
     public void registerInputMapping(Mapping mapping) throws IOException {
         mapping.baseEventId = nextEventID;
         for (String m : mapping.inputNames) {
@@ -56,6 +58,7 @@ public class SimulationConnector {
         }
     }
 
+    @Override
     public void registerOutputMapping(Mapping mapping) throws IOException {
         dataMappings.add(mapping);
         int dataId = dataMappings.size() - 1;
@@ -71,6 +74,7 @@ public class SimulationConnector {
                 0, 0,0);
     }
 
+    @Override
     public void sendEvent(Command command) throws IOException {
         for (int i = 0; i < command.mapping.inputNames.size(); i++) {
             simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
@@ -82,9 +86,9 @@ public class SimulationConnector {
     }
 
     private class DataHandler implements SimObjectDataHandler {
-        private DataCommandSink sink;
+        private SerialDevice sink;
 
-        public DataHandler(DataCommandSink sink) {
+        public DataHandler(SerialDevice sink) {
             this.sink = sink;
         }
 

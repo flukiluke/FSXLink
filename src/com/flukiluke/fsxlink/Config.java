@@ -12,10 +12,9 @@ public class Config {
     // Literals used in the configuration
     public static final String SIMCONNECT = "simConnect";
     public static final String APPNAME = "appName";
+    public static final String FAKE = "fake";
     public static final String IP = "ip";
-    public static final String IPVERSION = "ipVersion";
     public static final String PORT = "port";
-    public static final String PROTOCOL = "protocol";
 
     public static final String SERIAL = "serial";
     public static final String DEVICE = "device";
@@ -83,8 +82,11 @@ public class Config {
         return otherwise;
     }
 
-    public Boolean getBoolean(String name) {
-        return (Boolean)data.get(name);
+    public Boolean getBoolean(String name, boolean otherwise) {
+        if (data.containsKey(name)) {
+            return (Boolean)data.get(name);
+        }
+        return otherwise;
     }
 
     private Config(Map data) {

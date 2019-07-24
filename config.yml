@@ -1,10 +1,12 @@
 ---
+
 simConnect:
   appName: FSXLink
+  fake: true
 
 serial:
   device: console
-  baud: 115200
+  baud: 9600
   echo: false
 
 mappings:
