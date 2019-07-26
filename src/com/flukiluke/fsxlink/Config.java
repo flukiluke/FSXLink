@@ -27,6 +27,7 @@ public class Config {
     public static final String CODE = "code";
     public static final String UNIT = "unit";
     public static final String TOGGLE = "toggle";
+    public static final String PROBE = "probe";
 
     private static Config config;
     private Map data;
@@ -52,12 +53,18 @@ public class Config {
         return list;
     }
 
-    public boolean isList(String name) {
-        return data.get(name) instanceof List;
-    }
-
-    public List<String> getListOfStrings(String name) {
-        return (List<String>)data.get(name);
+    public List<String> getUnilistOfStrings(String name) {
+        Object o = data.get(name);
+        if (o instanceof List) {
+            return (List<String>)o;
+        }
+        else {
+            List<String> l = new ArrayList<>(1);
+            if (o != null) {
+                l.add((String) o);
+            }
+            return l;
+        }
     }
 
     public String getString(String name) {

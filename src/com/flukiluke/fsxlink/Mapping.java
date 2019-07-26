@@ -1,6 +1,5 @@
 package com.flukiluke.fsxlink;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Mapping {
@@ -13,13 +12,7 @@ public class Mapping {
     public Integer baseEventId = 0;
 
     public Mapping(Config c) {
-        if (c.isList(Config.INPUT)) {
-            this.inputNames = c.getListOfStrings(Config.INPUT);
-        }
-        else {
-            this.inputNames = new ArrayList<>();
-            this.inputNames.add(c.getString(Config.INPUT));
-        }
+        this.inputNames = c.getUnilistOfStrings(Config.INPUT);
         this.outputName = c.getString(Config.OUTPUT);
         this.code = c.getString(Config.CODE);
         if (this.code == null) {

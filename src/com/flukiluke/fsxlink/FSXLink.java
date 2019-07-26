@@ -1,11 +1,12 @@
 package com.flukiluke.fsxlink;
 
 import java.io.IOException;
+import java.util.List;
 
 public class FSXLink {
     public static final String CONFIG_FILE = "config.yml";
 
-    private static SerialDevice serialDevice;
+    private static SerialManager serialManager;
     private static Simulation simulation;
 
     public static void main(String[] args) {
@@ -16,8 +17,9 @@ public class FSXLink {
             System.exit(1);
         }
 
-        SerialManager serialManager = new SerialManager();
-        serialManager.probePorts();
+        serialManager = new SerialManager();
+        List<String> probablePorts = Config.getConfig().getMap(Config.SERIAL).getUnilistOfStrings(Config.PROBE);
+        serialManager.probePorts(probablePorts);
 
         if (Config.getConfig().getMap(Config.SIMCONNECT).getBoolean(Config.FAKE, false)) {
             simulation = new NullSimulation();
@@ -32,7 +34,7 @@ public class FSXLink {
         }
         try {
             registerMappings();
-            simulation.startDataHandler(serialDevice);
+            simulation.startDataHandler(serialManager);
             mainLoop();
         } catch (IOException e) {
             System.err.println("Communication failed: " + e.getLocalizedMessage());
@@ -44,7 +46,7 @@ public class FSXLink {
         for (Config c : Config.getConfig().getListOfMaps(Config.MAPPINGS)) {
             Mapping m = new Mapping(c);
             if (m.isInput()) {
-                serialDevice.registerInputMapping(m);
+                serialManager.registerInputMapping(m);
                 simulation.registerInputMapping(m);
             }
             if (m.isOutput()) {
@@ -56,7 +58,7 @@ public class FSXLink {
     private static void mainLoop() throws IOException {
         Command command;
         while (true) {
-            command = serialDevice.readCommand();
+            command = serialManager.readCommand();
             if (command == null) {
                 continue;
             }

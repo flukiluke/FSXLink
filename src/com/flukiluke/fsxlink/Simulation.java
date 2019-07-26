@@ -3,7 +3,7 @@ package com.flukiluke.fsxlink;
 import java.io.IOException;
 
 public interface Simulation {
-    void startDataHandler(SerialDevice sink);
+    void startDataHandler(SerialManager sink);
 
     void registerInputMapping(Mapping mapping) throws IOException;
 

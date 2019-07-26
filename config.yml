@@ -2,12 +2,9 @@
 
 simConnect:
   appName: FSXLink
-  fake: true
 
 serial:
-  device: console
   baud: 9600
-  echo: false
 
 mappings:
   - input: AP_MASTER
@@ -15,71 +12,73 @@ mappings:
     code: =a
     unit: toggle
 
-  - input: [AP_ALT_VAR_SET_ENGLISH]
+  - input: AP_ALT_VAR_SET_ENGLISH
     output: AUTOPILOT ALTITUDE LOCK VAR
     code: =b
     unit: feet
 
-  - input: [AP_PANEL_ALTITUDE_HOLD]
+  - input: AP_PANEL_ALTITUDE_HOLD
     output: AUTOPILOT ALTITUDE LOCK
     code: =k
     unit: toggle
 
-  - input: [HEADING_BUG_SET]
+  - input: HEADING_BUG_SET
     output: AUTOPILOT HEADING LOCK DIR
     code: =h
     unit: degrees
 
-  - input: [AP_PANEL_HEADING_HOLD]
+  - input: AP_PANEL_HEADING_HOLD
     output: AUTOPILOT HEADING LOCK
     code: =j
     unit: toggle
 
-  - input: [AP_SPD_VAR_SET]
+  - input: AP_SPD_VAR_SET
     output: AUTOPILOT AIRSPEED HOLD VAR
     code: =s
     unit: knots
 
-  - input: [AP_PANEL_SPEED_HOLD]
+  - input: AP_PANEL_SPEED_HOLD
     output: AUTOPILOT AIRSPEED HOLD
     code: =S
     unit: toggle
 
-  - input: [AUTO_THROTTLE_ARM]
+  - input: AUTO_THROTTLE_ARM
     output: AUTOPILOT THROTTLE ARM
     code: =t
     unit: toggle
 
-  - input: [TOGGLE_FLIGHT_DIRECTOR]
+  - input: TOGGLE_FLIGHT_DIRECTOR
     output: AUTOPILOT FLIGHT DIRECTOR ACTIVE
     code: ai
     unit: toggle
 
-  - input: [AP_NAV1_HOLD]
+  - input: AP_NAV1_HOLD
     output: AUTOPILOT NAV1 LOCK
     code: =o
     unit: toggle
 
-  - input: [AP_APR_HOLD]
+  - input: AP_APR_HOLD
     output: AUTOPILOT APPROACH HOLD
     code: =m
     unit: toggle
 
-  - input: [VOR1_SET]
+  - input: VOR1_SET
     output: NAV OBS:1
     unit: degrees
     code: =c
 
-  - input: [AP_VS_VAR_SET_ENGLISH]
+  - input: AP_VS_VAR_SET_ENGLISH
     output: AUTOPILOT VERTICAL HOLD VAR
     unit: feet/minute
     code: =v
 
-  - input: [AP_ALT_HOLD_OFF, AP_ALT_HOLD]
+  - input:
+    - AP_ALT_HOLD_OFF
+    - AP_ALT_HOLD
     code: =V
 
-  - input: [PAUSE_TOGGLE]
+  - input: PAUSE_TOGGLE
     code: =C
 
-  - input: [ABORT]
+  - input: ABORT
     code: sx

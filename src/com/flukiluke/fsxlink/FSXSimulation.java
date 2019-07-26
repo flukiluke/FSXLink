@@ -42,7 +42,7 @@ public class FSXSimulation implements Simulation {
     }
 
     @Override
-    public void startDataHandler(SerialDevice sink) {
+    public void startDataHandler(SerialManager sink) {
         DispatcherTask dt = new DispatcherTask(simConnect);
         dt.addSimObjectDataHandler(new DataHandler(sink));
         Thread t = new Thread(dt);
@@ -86,9 +86,9 @@ public class FSXSimulation implements Simulation {
     }
 
     private class DataHandler implements SimObjectDataHandler {
-        private SerialDevice sink;
+        private SerialManager sink;
 
-        public DataHandler(SerialDevice sink) {
+        public DataHandler(SerialManager sink) {
             this.sink = sink;
         }
 

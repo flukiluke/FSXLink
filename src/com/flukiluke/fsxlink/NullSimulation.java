@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class NullSimulation implements Simulation {
     @Override
-    public void startDataHandler(SerialDevice sink) {
+    public void startDataHandler(SerialManager sink) {
 
     }
 

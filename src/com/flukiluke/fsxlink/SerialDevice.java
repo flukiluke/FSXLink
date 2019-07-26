@@ -12,11 +12,15 @@ public class SerialDevice extends Thread {
     private InputStream input;
     private OutputStream output;
     private PrefixTree<Mapping> mappings = new PrefixTree<>();
+    private SerialManager serialManager;
     public String deviceName;
+    public String portName;
 
-    public SerialDevice(CommPortIdentifier portid, int baud) throws IOException {
+    public SerialDevice(SerialManager serialManager, CommPortIdentifier portId, int baud) throws IOException {
+        this.serialManager = serialManager;
+        portName = portId.getName();
         try {
-            SerialPort serialPort = (SerialPort) portid.open(getClass().getName(), SERIAL_TIMEOUT);
+            SerialPort serialPort = (SerialPort) portId.open(getClass().getName(), SERIAL_TIMEOUT);
             serialPort.setSerialPortParams(baud,
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
@@ -26,8 +30,7 @@ public class SerialDevice extends Thread {
             output = serialPort.getOutputStream();
         }
         catch (PortInUseException | UnsupportedCommOperationException e) {
-            throw new IOException("Connection to serial device at " + portid.getName()
-                    + " failed: " + e.toString());
+            throw new IOException("Connection to serial device at " + portName + " failed: " + e.toString());
         }
         sendHandshake();
         start();
@@ -40,38 +43,10 @@ public class SerialDevice extends Thread {
                 readCommand();
             }
             catch (IOException e) {
-                System.err.println(e);
+                System.err.println(getHumanName() + ": " + e.getLocalizedMessage());
                 interrupt();
             }
         }
-    }
-
-    public SerialDevice() throws IOException {
-        Config serialConfig = Config.getConfig().getMap(Config.SERIAL);
-        String address = serialConfig.getString(Config.DEVICE);
-        if (address.equals("console")) {
-            input = System.in;
-            output = System.out;
-            return;
-        }
-        try {
-            SerialPort serialPort = (SerialPort) CommPortIdentifier
-                    .getPortIdentifier(address)
-                    .open(getClass().getName(), 3);
-            serialPort.setSerialPortParams(serialConfig.getInteger(Config.BAUD),
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_OUT);
-            input = serialPort.getInputStream();
-            output = serialPort.getOutputStream();
-        }
-        catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException e) {
-            throw new IOException("Connection to serial device at " + serialConfig.getString(Config.DEVICE)
-                                    + " failed: " + e.toString());
-        }
-        sendHandshake();
-        start();
     }
 
     public void registerInputMapping(Mapping m) {
@@ -79,23 +54,28 @@ public class SerialDevice extends Thread {
     }
 
     public void sendCommand(Command command) {
-        System.out.println(command);
+        System.out.println(getHumanName() + " <- " + command);
         try {
             output.write((command.toString() + '\n').getBytes());
         }
         catch (IOException e) {
-            System.err.println("Serial communications error");
+            System.err.println(getHumanName() + ": Serial communications error");
             System.exit(1);
         }
     }
 
-    public Command readCommand() throws IOException {
+    public String getHumanName() {
+        return deviceName == null ? portName : deviceName;
+    }
+
+    private void readCommand() throws IOException {
         String buffer = readLine();
+        System.out.println(getHumanName() + " -> " + buffer);
+
         if (buffer.length() > 1 && buffer.charAt(0) == '@') {
             deviceName = buffer.substring(1);
-            return null;
+            return;
         }
-        System.out.println("        " + buffer);
         int codeLength = 1;
         while (codeLength <= buffer.length() && mappings.isValidPrefix(buffer.substring(0, codeLength))) {
             codeLength++;
@@ -104,12 +84,13 @@ public class SerialDevice extends Thread {
 
         Mapping m = mappings.get(buffer.substring(0, codeLength));
         if (m == null) {
-            System.err.println("Got unknown command from serial device: " + buffer);
-            return null;
+            System.err.println(getHumanName() + ": unknown command: " + buffer);
+            return;
         }
 
         if (codeLength == buffer.length()) {
-            return new Command(m);
+            serialManager.addReceivedCommand(new Command(m));
+            return;
         }
 
         Integer argument;
@@ -117,10 +98,10 @@ public class SerialDevice extends Thread {
             argument = Integer.parseInt(buffer.substring(codeLength));
         }
         catch (NumberFormatException e) {
-            System.err.println("Argument from serial device is not an integer: " + buffer.substring(codeLength));
-            return null;
+            System.err.println(getHumanName() + ": argument is not an integer: " + buffer.substring(codeLength));
+            return;
         }
-        return new Command(m, argument);
+        serialManager.addReceivedCommand(new Command(m, argument));
     }
 
     private void sendHandshake() throws IOException {
@@ -138,7 +119,7 @@ public class SerialDevice extends Thread {
             }
             buffer.append(c);
             if (buffer.length() > READ_BUFFER_SIZE) {
-                System.err.println("Serial read buffer full without newline marker, emptying buffer");
+                System.err.println(getHumanName()+ ": serial read buffer full without newline marker, emptying buffer");
                 buffer.delete(0, buffer.length());
             }
         }
