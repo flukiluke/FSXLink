@@ -45,9 +45,9 @@ public class FSXSimulation implements Simulation {
     public void startDataHandler(CommandHandler handler) {
         DispatcherTask dt = new DispatcherTask(simConnect);
         dt.addSimObjectDataHandler(new DataHandler(handler));
-        Thread t = new Thread(dt);
-        t.setDaemon(true);
-        t.start();
+        Thread dispatcherThread = new Thread(dt);
+        dispatcherThread.setDaemon(true);
+        dispatcherThread.start();
     }
 
     @Override

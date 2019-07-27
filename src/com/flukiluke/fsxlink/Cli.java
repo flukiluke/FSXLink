@@ -16,25 +16,25 @@ public class Cli {
         }
         simulation = new FSXSimulation();
 
-        switch (args[1]) {
+        switch (args[0]) {
             case "send":
-                if (args.length == 3) {
-                    sendEvent(args[2]);
+                if (args.length == 2) {
+                    sendEvent(args[1]);
                 }
                 else {
-                    sendEvent(args[2], Integer.parseInt(args[3]));
+                    sendEvent(args[1], Integer.parseInt(args[2]));
                 }
                 break;
             case "receive":
-                if (args.length == 3) {
-                    receiveData(args[2]);
+                if (args.length == 2) {
+                    receiveData(args[1]);
                 }
                 else {
-                    receiveData(args[2], args[3]);
+                    receiveData(args[1], args[2]);
                 }
                 break;
             default:
-                System.err.println("Unknown command " + args[1]);
+                System.err.println("Unknown command " + args[0]);
                 showHelp();
         }
     }
@@ -50,6 +50,12 @@ public class Cli {
         simulation.registerInputMapping(m);
         Command c = new Command(m, argument);
         simulation.sendEvent(c);
+        try {
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+            // Ignore
+        }
     }
 
     private static void receiveData(String variableName) throws IOException {
@@ -60,13 +66,11 @@ public class Cli {
         Mapping m = new Mapping(null, variableName, null, unit);
         simulation.registerOutputMapping(m);
         simulation.startDataHandler(new OneshotCommandPrinter());
-        while (true) {
-            try {
-                Cli.class.wait();
-            }
-            catch (InterruptedException e) {
-                // ignore
-            }
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            // Ignore
         }
     }
 
@@ -80,7 +84,7 @@ public class Cli {
     private static class OneshotCommandPrinter implements CommandHandler {
         @Override
         public void handleCommand(Command command) {
-            System.out.println(command);
+            System.out.println(command.argument);
             System.exit(0);
         }
     }
