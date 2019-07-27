@@ -42,9 +42,9 @@ public class FSXSimulation implements Simulation {
     }
 
     @Override
-    public void startDataHandler(SerialManager sink) {
+    public void startDataHandler(CommandHandler handler) {
         DispatcherTask dt = new DispatcherTask(simConnect);
-        dt.addSimObjectDataHandler(new DataHandler(sink));
+        dt.addSimObjectDataHandler(new DataHandler(handler));
         Thread t = new Thread(dt);
         t.setDaemon(true);
         t.start();
@@ -86,9 +86,9 @@ public class FSXSimulation implements Simulation {
     }
 
     private class DataHandler implements SimObjectDataHandler {
-        private SerialManager sink;
+        private CommandHandler sink;
 
-        public DataHandler(SerialManager sink) {
+        public DataHandler(CommandHandler sink) {
             this.sink = sink;
         }
 
@@ -96,9 +96,9 @@ public class FSXSimulation implements Simulation {
         public void handleSimObject(SimConnect sender, RecvSimObjectData e) {
             Mapping m = dataMappings.get(e.getDefineID());
             if (m.unit == null) {
-                sink.sendCommand(new Command(m));
+                sink.handleCommand(new Command(m));
             } else {
-                sink.sendCommand(new Command(m, e.getDataInt32()));
+                sink.handleCommand(new Command(m, e.getDataInt32()));
             }
         }
     }

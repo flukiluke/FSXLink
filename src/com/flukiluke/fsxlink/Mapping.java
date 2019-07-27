@@ -11,6 +11,14 @@ public class Mapping {
 
     public Integer baseEventId = 0;
 
+    public Mapping(List<String> inputNames, String outputName, String code, String unit) {
+        this.inputNames = inputNames;
+        this.outputName = outputName;
+        this.code = code;
+        this.unit = unit;
+        this.isToggle = false;
+    }
+
     public Mapping(Config c) {
         this.inputNames = c.getUnilistOfStrings(Config.INPUT);
         this.outputName = c.getString(Config.OUTPUT);

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class SerialManager {
+public class SerialManager implements CommandHandler {
     private List<SerialDevice> devices = new ArrayList<>();
     private final Queue<Command> receivedCommands = new ArrayDeque<>();
 
@@ -34,7 +34,8 @@ public class SerialManager {
         }
     }
 
-    public void sendCommand(Command c) {
+    @Override
+    public void handleCommand(Command c) {
         devices.forEach(d -> d.sendCommand(c));
     }
 

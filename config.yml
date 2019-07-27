@@ -2,9 +2,12 @@
 
 simConnect:
   appName: FSXLink
+  fake: true
 
 serial:
   baud: 9600
+  probe:
+    - ttyACM0
 
 mappings:
   - input: AP_MASTER
