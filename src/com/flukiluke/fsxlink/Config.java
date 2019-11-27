@@ -20,12 +20,14 @@ public class Config {
     public static final String DEVICE = "device";
     public static final String BAUD = "baud";
     public static final String ECHO = "echo";
+    public static final String CONSOLE = "console";
 
     public static final String MAPPINGS = "mappings";
     public static final String INPUT = "input";
     public static final String OUTPUT = "output";
     public static final String CODE = "code";
     public static final String UNIT = "unit";
+    public static final String TYPE = "type";
     public static final String TOGGLE = "toggle";
     public static final String PROBE = "probe";
 

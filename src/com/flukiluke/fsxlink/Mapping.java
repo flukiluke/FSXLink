@@ -7,15 +7,17 @@ public class Mapping {
     public final String outputName;
     public final String code;
     public final String unit;
+    public final boolean isFloat;
     public final boolean isToggle;
 
     public Integer baseEventId = 0;
 
-    public Mapping(List<String> inputNames, String outputName, String code, String unit) {
+    public Mapping(List<String> inputNames, String outputName, String code, String unit, String type) {
         this.inputNames = inputNames;
         this.outputName = outputName;
         this.code = code;
         this.unit = unit;
+        this.isFloat = type.equalsIgnoreCase("float");
         this.isToggle = false;
     }
 
@@ -38,6 +40,7 @@ public class Mapping {
             this.unit = c.getString(Config.UNIT);
             this.isToggle = false;
         }
+        this.isFloat = c.getString(Config.TYPE, "int").equalsIgnoreCase("float");
     }
 
     public boolean isInput() {
@@ -46,5 +49,5 @@ public class Mapping {
 
     public boolean isOutput() {
         return outputName != null;
-}
+    }
 }

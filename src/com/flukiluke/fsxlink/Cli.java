@@ -1,8 +1,12 @@
 package com.flukiluke.fsxlink;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Cli {
     private static Simulation simulation;
@@ -15,27 +19,34 @@ public class Cli {
             System.exit(1);
         }
         simulation = new FSXSimulation();
-
-        switch (args[0]) {
-            case "send":
-                if (args.length == 2) {
-                    sendEvent(args[1]);
-                }
-                else {
-                    sendEvent(args[1], Integer.parseInt(args[2]));
-                }
-                break;
-            case "receive":
-                if (args.length == 2) {
-                    receiveData(args[1]);
-                }
-                else {
-                    receiveData(args[1], args[2]);
-                }
-                break;
-            default:
-                System.err.println("Unknown command " + args[0]);
-                showHelp();
+        Scanner inputScanner = new Scanner(System.in);
+        while (true) {
+            String[] parts = inputScanner.nextLine().split(" ");
+            if (parts.length == 0)
+                continue;
+            switch (parts[0]) {
+                case "send":
+                    if (parts.length == 2) {
+                        sendEvent(parts[1]);
+                    }
+                    else {
+                        sendEvent(parts[1], Integer.parseInt(parts[2]));
+                    }
+                    break;
+                case "watchint":
+                    receiveInt(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length - 1)),
+                            parts[parts.length - 1], new ContinuousCommandPrinter());
+                    break;
+                case "watchfloat":
+                    receiveFloat(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length - 1)),
+                            parts[parts.length - 1], new ContinuousCommandPrinter());
+                    break;
+                default:
+                    System.err.println("send <event> <value>\n" +
+                            "watchint <variable> <unit>\n" +
+                            "watchfloat <variable> <unit>");
+                    break;
+            }
         }
     }
 
@@ -46,46 +57,30 @@ public class Cli {
     private static void sendEvent(String eventName, Integer argument) throws IOException {
         List<String> inputs = new ArrayList<>();
         inputs.add(eventName);
-        Mapping m = new Mapping(inputs, null, null, null);
+        Mapping m = new Mapping(inputs, null, null, null, "int");
         simulation.registerInputMapping(m);
         Command c = new Command(m, argument);
         simulation.sendEvent(c);
-        try {
-            Thread.sleep(500);
-        }
-        catch (InterruptedException e) {
-            // Ignore
-        }
     }
 
-    private static void receiveData(String variableName) throws IOException {
-        receiveData(variableName, "");
+    private static void receiveFloat(String variableName, String unit,  CommandHandler receiver) throws IOException {
+        receiveData(variableName, unit, receiver, "float");
     }
 
-    private static void receiveData(String variableName, String unit) throws IOException {
-        Mapping m = new Mapping(null, variableName, null, unit);
+    private static void receiveInt(String variableName, String unit,  CommandHandler receiver) throws IOException {
+        receiveData(variableName, unit, receiver, "int");
+    }
+
+    private static void receiveData(String variableName, String unit,  CommandHandler receiver, String type) throws IOException {
+        Mapping m = new Mapping(null, variableName, null, unit, type);
         simulation.registerOutputMapping(m);
-        simulation.startDataHandler(new OneshotCommandPrinter());
-        try {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {
-            // Ignore
-        }
+        simulation.startDataHandler(receiver);
     }
 
-    private static void showHelp() {
-        System.err.println("Tool for testing Flight Simulator inputs and outputs.\n\n"
-                         + "Usage: " + Cli.class.getName() + " send <event name> [<argument>]\n"
-                         + "       " + Cli.class.getName() + " receive <variable name> [<unit>]");
-        System.exit(0);
-    }
-
-    private static class OneshotCommandPrinter implements CommandHandler {
+    private static class ContinuousCommandPrinter implements CommandHandler {
         @Override
         public void handleCommand(Command command) {
-            System.out.println(command.argument);
-            System.exit(0);
+            System.out.println(command.mapping.outputName + ": " + command.argument);
         }
     }
 }

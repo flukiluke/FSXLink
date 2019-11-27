@@ -3,7 +3,7 @@ package com.flukiluke.fsxlink;
 public class Command {
     public final Mapping mapping;
     public final boolean hasArgument;
-    public final Integer argument;
+    public final Number argument;
 
     public Command(Mapping mapping) {
         this.mapping = mapping;
@@ -12,6 +12,12 @@ public class Command {
     }
 
     public Command(Mapping mapping, Integer argument) {
+        this.mapping = mapping;
+        this.hasArgument = true;
+        this.argument = argument;
+    }
+
+    public Command(Mapping mapping, Double argument) {
         this.mapping = mapping;
         this.hasArgument = true;
         this.argument = argument;

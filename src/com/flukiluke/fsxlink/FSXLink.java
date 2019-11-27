@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class FSXLink {
-    public static final String CONFIG_FILE = "config.yml";
+    public static final String CONFIG_FILE = "res/config.yml";
 
     private static SerialManager serialManager;
     private static Simulation simulation;
@@ -17,9 +17,7 @@ public class FSXLink {
             System.exit(1);
         }
 
-        serialManager = new SerialManager();
-        List<String> probablePorts = Config.getConfig().getMap(Config.SERIAL).getUnilistOfStrings(Config.PROBE);
-        serialManager.probePorts(probablePorts);
+        serialManager = new SerialManager(Config.getConfig().getMap(Config.SERIAL));
 
         if (Config.getConfig().getMap(Config.SIMCONNECT).getBoolean(Config.FAKE, false)) {
             simulation = new NullSimulation();
@@ -32,6 +30,7 @@ public class FSXLink {
                 System.exit(1);
             }
         }
+
         try {
             registerMappings();
             simulation.startDataHandler(serialManager);

@@ -65,7 +65,7 @@ public class FSXSimulation implements Simulation {
         simConnect.addToDataDefinition(dataId,
                 mapping.outputName,
                 mapping.unit,
-                SimConnectDataType.INT32);
+                mapping.isFloat ? SimConnectDataType.FLOAT64 : SimConnectDataType.INT32);
         simConnect.requestDataOnSimObject(dataId,
                 dataId,
                 0,
@@ -79,7 +79,7 @@ public class FSXSimulation implements Simulation {
         for (int i = 0; i < command.mapping.inputNames.size(); i++) {
             simConnect.transmitClientEvent(SimConnectConstants.OBJECT_ID_USER,
                     command.mapping.baseEventId + i,
-                    command.argument,
+                    (Integer)command.argument,
                     NotificationPriority.DEFAULT.ordinal(),
                     SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY);
         }
@@ -98,7 +98,14 @@ public class FSXSimulation implements Simulation {
             if (m.unit == null) {
                 sink.handleCommand(new Command(m));
             } else {
-                sink.handleCommand(new Command(m, e.getDataInt32()));
+                Command c;
+                if (m.isFloat) {
+                    c = new Command(m, e.getDataFloat64());
+                }
+                else {
+                    c = new Command(m, e.getDataInt32());
+                }
+                sink.handleCommand(c);
             }
         }
     }

@@ -4,13 +4,21 @@ import purejavacomm.CommPortIdentifier;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class SerialManager implements CommandHandler {
     private List<SerialDevice> devices = new ArrayList<>();
     private final Queue<Command> receivedCommands = new ArrayDeque<>();
 
-    public void probePorts(List<String> usablePorts)  {
+    public SerialManager(Config config) {
+        if (config.getBoolean(Config.CONSOLE, false)) {
+            devices.add(new ConsoleSerialDevice(this));
+        }
+        else {
+            probePorts(config.getUnilistOfStrings(Config.PROBE));
+        }
+    }
+
+    private void probePorts(List<String> usablePorts)  {
         Enumeration portIdentifiers = CommPortIdentifier.getPortIdentifiers();
         while (portIdentifiers.hasMoreElements()) {
             CommPortIdentifier portId = (CommPortIdentifier) portIdentifiers.nextElement();

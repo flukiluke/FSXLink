@@ -9,12 +9,16 @@ import java.io.OutputStream;
 public class SerialDevice extends Thread {
     public static final int SERIAL_TIMEOUT = 1000;
     private static final int READ_BUFFER_SIZE = 10;
-    private InputStream input;
-    private OutputStream output;
+    protected InputStream input;
+    protected OutputStream output;
     private PrefixTree<Mapping> mappings = new PrefixTree<>();
-    private SerialManager serialManager;
+    protected SerialManager serialManager;
     public String deviceName;
     public String portName;
+
+    public SerialDevice() {
+        // Exists only to satisfy Java's annoying rules for constructors & inheritance
+    }
 
     public SerialDevice(SerialManager serialManager, CommPortIdentifier portId, int baud) throws IOException {
         this.serialManager = serialManager;

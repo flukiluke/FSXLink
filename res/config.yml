@@ -2,12 +2,12 @@
 
 simConnect:
   appName: FSXLink
-  fake: true
+  ip: 127.0.0.1
+  port: 9017
 
 serial:
-  baud: 9600
-  probe:
-    - ttyACM0
+  baud: 115200
+  console: true
 
 mappings:
   - input: AP_MASTER
@@ -85,3 +85,13 @@ mappings:
 
   - input: ABORT
     code: sx
+
+  - output: PLANE PITCH DEGREES
+    unit: radians
+    code: +p
+    type: float
+
+  - output: PLANE BANK DEGREES
+    unit: radians
+    code: +b
+    type: float
