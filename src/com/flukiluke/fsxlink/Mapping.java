@@ -9,12 +9,14 @@ public class Mapping {
     public final String unit;
     public final boolean isFloat;
     public final boolean isToggle;
+    public final List<String> receivers;
 
     public Integer baseEventId = 0;
 
-    public Mapping(List<String> inputNames, String outputName, String code, String unit, String type) {
+    public Mapping(List<String> inputNames, String outputName, List<String> receivers, String code, String unit, String type) {
         this.inputNames = inputNames;
         this.outputName = outputName;
+        this.receivers = receivers;
         this.code = code;
         this.unit = unit;
         this.isFloat = type.equalsIgnoreCase("float");
@@ -24,6 +26,7 @@ public class Mapping {
     public Mapping(Config c) {
         this.inputNames = c.getUnilistOfStrings(Config.INPUT);
         this.outputName = c.getString(Config.OUTPUT);
+        this.receivers = c.getUnilistOfStrings(Config.FOR);
         this.code = c.getString(Config.CODE);
         if (this.code == null) {
             throw new IllegalArgumentException("No code specified for mapping");

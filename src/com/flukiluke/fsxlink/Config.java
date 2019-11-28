@@ -25,6 +25,7 @@ public class Config {
     public static final String MAPPINGS = "mappings";
     public static final String INPUT = "input";
     public static final String OUTPUT = "output";
+    public static final String FOR = "for";
     public static final String CODE = "code";
     public static final String UNIT = "unit";
     public static final String TYPE = "type";

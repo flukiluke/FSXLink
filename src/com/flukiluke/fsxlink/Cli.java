@@ -57,7 +57,7 @@ public class Cli {
     private static void sendEvent(String eventName, Integer argument) throws IOException {
         List<String> inputs = new ArrayList<>();
         inputs.add(eventName);
-        Mapping m = new Mapping(inputs, null, null, null, "int");
+        Mapping m = new Mapping(inputs, null, new ArrayList<String>(), null, null, "int");
         simulation.registerInputMapping(m);
         Command c = new Command(m, argument);
         simulation.sendEvent(c);
@@ -72,7 +72,7 @@ public class Cli {
     }
 
     private static void receiveData(String variableName, String unit,  CommandHandler receiver, String type) throws IOException {
-        Mapping m = new Mapping(null, variableName, null, unit, type);
+        Mapping m = new Mapping(null, variableName, new ArrayList<String>(), null, unit, type);
         simulation.registerOutputMapping(m);
         simulation.startDataHandler(receiver);
     }

@@ -44,7 +44,11 @@ public class SerialManager implements CommandHandler {
 
     @Override
     public void handleCommand(Command c) {
-        devices.forEach(d -> d.sendCommand(c));
+        for (SerialDevice d : devices) {
+            if (c.mapping.receivers.size() == 0 || c.mapping.receivers.contains(d.deviceName)) {
+                d.sendCommand(c);
+            }
+        }
     }
 
     public void registerInputMapping(Mapping m) {
