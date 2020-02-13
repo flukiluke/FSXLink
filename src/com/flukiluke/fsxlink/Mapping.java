@@ -7,16 +7,18 @@ public class Mapping {
     public final String outputName;
     public final String code;
     public final String unit;
+    public final Integer round;
     public final boolean isFloat;
     public final boolean isToggle;
     public final List<String> receivers;
 
     public Integer baseEventId = 0;
 
-    public Mapping(List<String> inputNames, String outputName, List<String> receivers, String code, String unit, String type) {
+    public Mapping(List<String> inputNames, String outputName, List<String> receivers, String code, String unit, String type, Integer round) {
         this.inputNames = inputNames;
         this.outputName = outputName;
         this.receivers = receivers;
+        this.round = round;
         this.code = code;
         this.unit = unit;
         this.isFloat = type.equalsIgnoreCase("float");
@@ -28,6 +30,7 @@ public class Mapping {
         this.outputName = c.getString(Config.OUTPUT);
         this.receivers = c.getUnilistOfStrings(Config.FOR);
         this.code = c.getString(Config.CODE);
+        this.round = c.getInteger(Config.ROUND);
         if (this.code == null) {
             throw new IllegalArgumentException("No code specified for mapping");
         }

@@ -28,6 +28,11 @@ public class Command {
         if (!hasArgument && !mapping.isToggle) {
             return mapping.code;
         }
-        return mapping.code + argument.toString();
+        if (mapping.isFloat && mapping.round != null) {
+            return mapping.code + String.format("%." + mapping.round + "f", argument);
+        }
+        else {
+            return mapping.code + argument.toString();
+        }
     }
 }

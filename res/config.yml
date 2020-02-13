@@ -2,92 +2,93 @@
 
 simConnect:
   appName: FSXLink
+  #ip: 192.168.1.83
   ip: 127.0.0.1
   port: 9017
 
 serial:
   #baud: 115200
-  baud: 9600
-  #console: true
+  #baud: 9600
+  console: true
 
 mappings:
   - input: AP_MASTER
     output: AUTOPILOT MASTER
     code: =a
     unit: toggle
-    for: ap
+    for: AP
 
   - input: AP_ALT_VAR_SET_ENGLISH
     output: AUTOPILOT ALTITUDE LOCK VAR
     code: =b
     unit: feet
-    for: ap
+    for: AP
 
   - input: AP_PANEL_ALTITUDE_HOLD
     output: AUTOPILOT ALTITUDE LOCK
     code: =k
     unit: toggle
-    for: ap
+    for: AP
 
   - input: HEADING_BUG_SET
     output: AUTOPILOT HEADING LOCK DIR
     code: =h
     unit: degrees
-    for: ap
+    for: AP
 
   - input: AP_PANEL_HEADING_HOLD
     output: AUTOPILOT HEADING LOCK
     code: =j
     unit: toggle
-    for: ap
+    for: AP
 
   - input: AP_SPD_VAR_SET
     output: AUTOPILOT AIRSPEED HOLD VAR
     code: =s
     unit: knots
-    for: ap
+    for: AP
 
   - input: AP_PANEL_SPEED_HOLD
     output: AUTOPILOT AIRSPEED HOLD
     code: =S
     unit: toggle
-    for: ap
+    for: AP
 
   - input: AUTO_THROTTLE_ARM
     output: AUTOPILOT THROTTLE ARM
     code: =t
     unit: toggle
-    for: ap
+    for: AP
 
   - input: TOGGLE_FLIGHT_DIRECTOR
     output: AUTOPILOT FLIGHT DIRECTOR ACTIVE
     code: ai
     unit: toggle
-    for: ap
+    for: AP
 
   - input: AP_NAV1_HOLD
     output: AUTOPILOT NAV1 LOCK
     code: =o
     unit: toggle
-    for: ap
+    for: AP
 
   - input: AP_APR_HOLD
     output: AUTOPILOT APPROACH HOLD
     code: =m
     unit: toggle
-    for: ap
+    for: AP
 
   - input: VOR1_SET
     output: NAV OBS:1
     unit: degrees
     code: =c
-    for: ap
+    for: AP
 
   - input: AP_VS_VAR_SET_ENGLISH
     output: AUTOPILOT VERTICAL HOLD VAR
     unit: feet/minute
     code: =v
-    for: ap
+    for: AP
 
   - input:
     - AP_ALT_HOLD_OFF
@@ -100,14 +101,22 @@ mappings:
   - input: ABORT
     code: sx
 
-  - output: PLANE PITCH DEGREES
-    unit: radians
-    code: +p
-    type: float
-    for: pi
+#  - output: PLANE PITCH DEGREES
+#    unit: degrees
+#    code: +a
+#    type: float
+#    round: 2
+#    for: pi
 
-  - output: PLANE BANK DEGREES
-    unit: radians
-    code: +b
+#  - output: PLANE BANK DEGREES
+#    unit: degrees
+#    code: +b
+#    type: float
+#    round: 2
+#    for: pi
+#
+  - output: ACCELERATION BODY Y
+    code: +c
     type: float
+    round: 4
     for: pi

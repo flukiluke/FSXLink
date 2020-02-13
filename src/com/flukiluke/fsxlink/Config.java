@@ -31,6 +31,7 @@ public class Config {
     public static final String TYPE = "type";
     public static final String TOGGLE = "toggle";
     public static final String PROBE = "probe";
+    public static final String ROUND = "round";
 
     private static Config config;
     private Map data;

@@ -45,7 +45,7 @@ public class SerialManager implements CommandHandler {
     @Override
     public void handleCommand(Command c) {
         for (SerialDevice d : devices) {
-            if (c.mapping.receivers.size() == 0 || c.mapping.receivers.contains(d.deviceName)) {
+            if (c.mapping.receivers.size() == 0 || c.mapping.receivers.contains(d.deviceName) || d.deviceName == "CONSOLE") {
                 d.sendCommand(c);
             }
         }
