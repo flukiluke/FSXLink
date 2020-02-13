@@ -15,13 +15,18 @@ If you are running FSXLink on the same computer as FSX, you don't need these nex
 The `serial` block sets configuration for the serial device. Currently we only support a single device.
 - `serial.device` Device file to open for serial communications.
 - `serial.baud` Baud rate to communicate at. Lower values may help if your device cannot process output fast enough.
-- `serial.echo` If set to true, received characters will be echoed back to device. Mostly useful for when the serial device is in fact a human.
+- `serial.console` If set to true, treat the programs' standard input & output as a serial device, so you can send commands interactively. This pseudo-device always identifies itself as `CONSOLE` and receives all outputs regardless of the `for` filter.
 
 `mappings` specifies how FSX events and data attributes are conveyed to the serial device. Some attributes of a mapping are optional.
 - `code` One or more characters that are used in the serial communication protocol, in both directions. Any code must not be the prefix of another code, otherwise everyone will get very confused and sad.
 - `input` FSX's name for the event, found on [Event IDs](https://www.prepar3d.com/SDKv4/sdk/references/variables/event_ids.html) in the SimConnect column. When the serial device transmits appropriately, this event will be generated in FSX. If omitted, the serial device cannot send this mappings's code.
 - `output` FSX's name for the variable, taken from [Simulation Variables](https://www.prepar3d.com/SDKv4/sdk/references/variables/simulation_variables.html). The value of this variable will be transmitted to the serial device when it changes. If omitted, the serial device will never receive this mapping's code.
 - `unit` Numeric data will be in a particular unit, such as 'feet' or 'knots'. This attribute what unit the value should be expressed in. Only needs to be set if `output` is set. Also see section on Toggles below.
+- `for` If specified, is a string or list of strings that are the names of connected serial devices, as discovered by the device interrogation protocol described below. The output will only be sent to devices that whose name is one of those provided. If this option is not specified, the output is sent to all devices. The special CONSOLE device always receives all outputs regardless of this setting. There is no effect on inputs.
+
+If the value is a floating-point number, the following options also apply:
+- `type` should be set to `float`
+- `round` is the number of decimal places to round the number to. If omitted, no rounding is done and you get very long numbers.
 
 ## Serial Protocol ##
 Commands sent to the serial device consist of the `code` string, followed by a numeric argument (if present), then finally a newline (ASCII 10, '\n') character. In a similar fashion, commands from the serial device should consist of the `code` string, any numeric argument, then the newline character.
