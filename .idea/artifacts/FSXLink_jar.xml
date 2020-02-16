@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="FSXLink:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/FSXLink_jar</output-path>
+  <artifact type="jar" build-on-make="true" name="FSXLink:jar">
+    <output-path>$PROJECT_DIR$/out</output-path>
     <root id="archive" name="FSXLink.jar">
       <element id="module-output" name="FSXLink" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar" path-in-jar="/" />

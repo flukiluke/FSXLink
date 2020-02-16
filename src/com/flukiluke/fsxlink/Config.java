@@ -2,8 +2,10 @@ package com.flukiluke.fsxlink;
 
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +37,33 @@ public class Config {
 
     private static Config config;
     private Map data;
+    public static final String CONFIG_FILE = "config.yml";
 
-    public static void loadConfigFile(String filename) throws IOException {
+    public static void loadConfigFile() throws IOException {
+        InputStream configStream;
+        try {
+            configStream = new FileInputStream(CONFIG_FILE);
+        }
+        catch (FileNotFoundException e) {
+            configStream = makeConfigFile();
+        }
         Yaml yaml = new Yaml(); //new Yaml(new CustomClassLoaderConstructor(Config.class.getClassLoader()));
-        config = new Config(yaml.load(new FileReader(filename)));
+        config = new Config(yaml.load(configStream));
+        configStream.close();
+    }
+
+    private static InputStream makeConfigFile() throws IOException {
+        InputStream inputStream = Config.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
+        try {
+            Files.copy(inputStream, Paths.get(CONFIG_FILE));
+        }
+        catch (IOException e) {
+            // ignore
+        }
+        finally {
+            inputStream.close();
+        }
+        return Config.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
     }
 
     public static Config getConfig() {

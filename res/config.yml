@@ -2,14 +2,11 @@
 
 simConnect:
   appName: FSXLink
-  #ip: 192.168.1.83
-  ip: 127.0.0.1
-  port: 9017
+  # ip: 192.168.1.83
+  # port: 9017
 
 serial:
-  #baud: 115200
-  #baud: 9600
-  console: true
+  baud: 9600
 
 mappings:
   - input: AP_MASTER
@@ -101,22 +98,19 @@ mappings:
   - input: ABORT
     code: sx
 
-#  - output: PLANE PITCH DEGREES
-#    unit: degrees
-#    code: +a
-#    type: float
-#    round: 2
-#    for: pi
+  - output: PLANE PITCH DEGREES
+    unit: degrees
+    code: +a
+    type: float
+    round: 2
 
-#  - output: PLANE BANK DEGREES
-#    unit: degrees
-#    code: +b
-#    type: float
-#    round: 2
-#    for: pi
-#
+  - output: PLANE BANK DEGREES
+    unit: degrees
+    code: +b
+    type: float
+    round: 2
+
   - output: ACCELERATION BODY Y
     code: +c
     type: float
     round: 4
-    for: pi

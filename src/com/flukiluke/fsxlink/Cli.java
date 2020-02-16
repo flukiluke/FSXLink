@@ -13,7 +13,7 @@ public class Cli {
 
     public static void main(String[] args) throws IOException {
         try {
-            Config.loadConfigFile(FSXLink.CONFIG_FILE);
+            Config.loadConfigFile();
         } catch (IOException e) {
             System.err.println("Problem loading config file: " + e.getLocalizedMessage());
             System.exit(1);
